@@ -2,12 +2,12 @@ import React from 'react'
 import InputMask from 'react-input-mask'
 
 type Props = {
-    value: string,
+    value?: string,
     label?: string,
     bottomLabel?: string,
     placeholder?: string
     required?: boolean,
-    type?: 'text' | 'password' | 'tel'
+    type?: 'text' | 'password' | 'tel' | 'number'
     mask?: string
     error?: string
     touched?: boolean
@@ -20,7 +20,8 @@ export default function Input({ value = '', label = '', bottomLabel = '', placeh
 
 
     const inputStyles = `bg-gray-bg border border-gray-stroke rounded-xl py-3 px-4 font-medium
-         outline-none placeholder:text-gray-text ${error && touched ? '!border-error' : 'focus:border-main-500'}`
+         outline-none placeholder:text-gray-text
+          ${error && touched ? '!border-error' : 'focus:border-main-500'}`
     return (
         <label className='flex flex-col w-full'>
             <span className='font-medium mb-2'>

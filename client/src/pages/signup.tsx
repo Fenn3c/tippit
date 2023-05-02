@@ -6,7 +6,7 @@ import PinInput from "@/components/PinInput";
 import TextButton from "@/components/TextButton";
 import Card from "@/components/layouts/Card";
 import Layout from "@/components/layouts/Layout";
-import { Formik, useFormik, Field } from "formik";
+import { useFormik } from "formik";
 import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
@@ -20,8 +20,6 @@ const signupSchema = Yup.object().shape({
     password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа'),
     passwordConfirm: Yup.string().required('Обязательное поле').oneOf([Yup.ref('password')], 'Пароли не совпадают'),
     position: Yup.string().required('Обязательное поле'),
-    pin: Yup.string().required('Обязательное поле').length(5, 'Неверный PIN'),
-    pinConfirm: Yup.string().required('Обязательное поле').oneOf([Yup.ref('pin')], 'PIN-коды не совпадают'),
     pfp: Yup.mixed().test(
         'fileFormat',
         'Файл должен быть в формате jpg, jpeg или png',
@@ -45,8 +43,6 @@ export default function SignUp() {
         passwordConfirm: '',
         position: 'Получатель чаевых',
         pfp: null,
-        pin: '',
-        pinConfirm: ''
     }
 
     const formik = useFormik(
@@ -92,25 +88,13 @@ export default function SignUp() {
     const handlePositionAndPfp = () => {
         setStep(6)
     }
-    const handleInitialPIN = async (pin: string) => {
-        console.log(pin)
-        await formik.setFieldTouched('pin')
-        await formik.setFieldValue('pin', pin)
-        setStep(7)
-    }
-    const handleRepeatPIN = async (pinConfirm: string) => {
-        await formik.setFieldTouched('pinConfirm')
-        await formik.setFieldValue('pinConfirm', pinConfirm)
-        if (pinConfirm === formik.values.pin)
-            setStep(8)
-    }
     const showBack = step > 1 && step !== 3
     console.log(formik.values, formik.errors)
     return (
         <Layout title="Регистрация">
             <Card bigYpadding className="mb-4">
-                {step !== 8 &&
-                    <MultiStepControls handleBack={handleBack} showBack={showBack} currentStep={step} totalSteps={7} />
+                {step !== 6 &&
+                    <MultiStepControls handleBack={handleBack} showBack={showBack} currentStep={step} totalSteps={5} />
                 }
                 {step === 1 && (
                     <div className="flex flex-col gap-y-8">
@@ -198,27 +182,10 @@ export default function SignUp() {
                             error={formik.errors.pfp}
                             squareImg />
                         <Button text='Далее' onClick={handlePositionAndPfp}
-                        disabled={Boolean(formik.errors.position) || Boolean(formik.errors.pfp)} />
+                            disabled={Boolean(formik.errors.position) || Boolean(formik.errors.pfp)} />
                     </div>
                 )}
                 {step === 6 && (
-                    <div className="flex flex-col gap-y-8 items-center">
-                        <PinInput title="Придумайте PIN-код" type="password" length={5} onComplete={handleInitialPIN}
-                            error={formik.errors.pin}
-                            touched={formik.touched.pin}
-
-                        />
-                    </div>
-                )}
-                {step === 7 && (
-                    <div className="flex flex-col gap-y-8 items-center">
-                        <PinInput title="Повторите PIN-код" type="password" length={5} onComplete={handleRepeatPIN}
-                            error={formik.errors.pinConfirm}
-                            touched={formik.touched.pinConfirm}
-                        />
-                    </div>
-                )}
-                {step === 8 && (
                     <div className="flex flex-col gap-y-8 items-center">
                         <CompleteIcon />
                         <div>
@@ -232,7 +199,7 @@ export default function SignUp() {
 
 
             </Card>
-            {step !== 8 &&
+            {step !== 6 &&
                 <p className="text-gray-text text-center">Регистрируясь в сервисе,<br />
                     вы соглашаетесь <a className="underline">с условиями</a></p>}
         </Layout>
