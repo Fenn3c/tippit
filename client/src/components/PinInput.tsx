@@ -56,7 +56,7 @@ const PinInput: React.FC<PinInputProps> = ({ length, onComplete, title = '', typ
     };
 
 
-    const inputStyle = `bg-gray-bg text-center border border-gray-stroke outline-none w-9 h-11 rounded-xl font-medium focus:border-main-500 ${(error && touched) && 'border-error'}`
+    const inputStyle = `bg-gray-bg text-center border border-gray-stroke outline-none w-9 h-11 rounded-xl font-medium focus:border-main-500 ${(error && touched) && '!border-error'}`
     return (
         <div className='flex flex-col items-center gap-y-2'>
             <p className='text-center font-medium'>{title}</p>

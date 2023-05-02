@@ -10,6 +10,7 @@ import { Formik, useFormik, Field } from "formik";
 import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
+import ImageUpload from "@/components/ImageUpload";
 
 const signupSchema = Yup.object().shape({
     phone: Yup.string().required('Обязательное поле').matches(/^[78]\d{10}$/, 'Неверный формат номера'),
@@ -21,7 +22,16 @@ const signupSchema = Yup.object().shape({
     position: Yup.string().required('Обязательное поле'),
     pin: Yup.string().required('Обязательное поле').length(5, 'Неверный PIN'),
     pinConfirm: Yup.string().required('Обязательное поле').oneOf([Yup.ref('pin')], 'PIN-коды не совпадают'),
-
+    pfp: Yup.mixed().test(
+        'fileFormat',
+        'Файл должен быть в формате jpg, jpeg или png',
+        (value) => {
+            if (!value) return true // Разрешаем пустые значения
+            const acceptedFormats = ['image/jpg', 'image/jpeg', 'image/png'];
+            console.log(value)
+            return value instanceof File && acceptedFormats.includes(value.type);
+        }
+    )
 })
 export default function SignUp() {
     const [step, setStep] = useState(1)
@@ -44,7 +54,7 @@ export default function SignUp() {
             initialValues,
             onSubmit: values => {
                 alert(JSON.stringify(values))
-                console.warn(JSON.stringify(values))
+                console.warn(values)
             },
             validationSchema: signupSchema
         })
@@ -55,7 +65,7 @@ export default function SignUp() {
     }
     const handleSmsPin = async (pin: string) => {
         console.log(pin)
-        formik.setFieldTouched('phoneVerify')
+        await formik.setFieldTouched('phoneVerify')
         if (pin[0] === '1') {
             formik.setFieldValue('phoneVerify', 'RANDOM_VERIFY_TOKEN')
             setStep(3)
@@ -75,24 +85,27 @@ export default function SignUp() {
     const handlePassword = () => {
         setStep(5)
     }
+    const handlePFP = async (file: File) => {
+        await formik.setFieldTouched('pfp')
+        await formik.setFieldValue('pfp', file)
+    }
     const handlePositionAndPfp = () => {
         setStep(6)
     }
-    const handleInitialPIN = (pin: string) => {
+    const handleInitialPIN = async (pin: string) => {
         console.log(pin)
-        formik.setFieldTouched('pin')
-        formik.setFieldValue('pin', pin)
+        await formik.setFieldTouched('pin')
+        await formik.setFieldValue('pin', pin)
         setStep(7)
     }
     const handleRepeatPIN = async (pinConfirm: string) => {
-        console.log(pinConfirm)
-        formik.setFieldTouched('pinConfirm')
-        await formik.validateField('pinConfirm')
-        formik.setFieldValue('pinConfirm', pinConfirm)
-        setStep(8)
+        await formik.setFieldTouched('pinConfirm')
+        await formik.setFieldValue('pinConfirm', pinConfirm)
+        if (pinConfirm === formik.values.pin)
+            setStep(8)
     }
     const showBack = step > 1 && step !== 3
-    console.log(formik.values)
+    console.log(formik.values, formik.errors)
     return (
         <Layout title="Регистрация">
             <Card bigYpadding className="mb-4">
@@ -178,8 +191,14 @@ export default function SignUp() {
                             value={formik.values.position}
                             error={formik.errors.position}
                         />
-                        <Input label="Изображение профиля" placeholder="" bottomLabel="Рекомендуемое соотношение сторон 1:1" type="text" />
-                        <Button text='Далее' onClick={handlePositionAndPfp} />
+                        <ImageUpload label="Изображение профиля"
+                            bottomLabel="Рекомендуемое соотношение сторон 1:1"
+                            onChange={handlePFP}
+                            touched={formik.touched.pfp}
+                            error={formik.errors.pfp}
+                            squareImg />
+                        <Button text='Далее' onClick={handlePositionAndPfp}
+                        disabled={Boolean(formik.errors.position) || Boolean(formik.errors.pfp)} />
                     </div>
                 )}
                 {step === 6 && (
