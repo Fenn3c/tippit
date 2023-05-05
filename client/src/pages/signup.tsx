@@ -11,10 +11,12 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import ImageUpload from "@/components/ImageUpload";
+import axios from 'axios'
 
 const signupSchema = Yup.object().shape({
     phone: Yup.string().required('Обязательное поле').matches(/^[78]\d{10}$/, 'Неверный формат номера'),
     phoneVerify: Yup.string().required('Неверный PIN'),
+    phoneVerificationId: Yup.string().required('Ошибка телефона'),
     name: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     surname: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа'),
@@ -29,13 +31,15 @@ const signupSchema = Yup.object().shape({
             console.log(value)
             return value instanceof File && acceptedFormats.includes(value.type);
         }
-    )
+    ).nullable()
 })
 export default function SignUp() {
     const [step, setStep] = useState(1)
+    const [loading, setLoading] = useState(false)
 
     const initialValues = {
         phone: '',
+        phoneVerificationId: '',
         phoneVerify: '',
         name: '',
         surname: '',
@@ -50,6 +54,30 @@ export default function SignUp() {
             initialValues,
             onSubmit: values => {
                 alert(JSON.stringify(values))
+
+                const formData = new FormData()
+                formData.append('phone', values.phone)
+                formData.append('name', values.name)
+                formData.append('surname', values.surname)
+                formData.append('position', values.position)
+                formData.append('password', values.password)
+                formData.append('passwordConfirm', values.passwordConfirm)
+                formData.append('phoneVerificationId', values.phoneVerificationId)
+                formData.append('phoneVerify', values.phoneVerify)
+                if (values.pfp)
+                    formData.append('pfp', values.pfp)
+
+
+
+
+
+                axios.post('/auth/signup', formData).then(res => {
+                    setStep(6)
+                }).catch(err => {
+                    console.error(err)
+                    setStep(1)
+                })
+
                 console.warn(values)
             },
             validationSchema: signupSchema
@@ -58,16 +86,30 @@ export default function SignUp() {
 
     const handleSMS = (e: React.MouseEvent<HTMLButtonElement>) => {
         setStep(2)
+        axios.post('/sms/send', {
+            phone: formik.values.phone
+        }).then((res) => {
+            formik.setFieldValue('phoneVerificationId', res.data.verificationId)
+            console.log(res)
+        }).catch((err) => {
+            console.error(err)
+            setStep(1)
+        })
     }
     const handleSmsPin = async (pin: string) => {
         console.log(pin)
         await formik.setFieldTouched('phoneVerify')
-        if (pin[0] === '1') {
-            formik.setFieldValue('phoneVerify', 'RANDOM_VERIFY_TOKEN')
+        console.log(formik.values)
+        await axios.post('/sms/verify', {
+            'verificationId': formik.values.phoneVerificationId,
+            'code': pin
+        }).then((res) => {
+            formik.setFieldValue('phoneVerify', res.data.accessCode)
             setStep(3)
-        }
-        else
+        }).catch((err) => {
+            console.error(err)
             formik.setFieldError('phoneVerify', 'Неверный PIN')
+        })
     }
 
     const handleBack = () => {
@@ -86,7 +128,7 @@ export default function SignUp() {
         await formik.setFieldValue('pfp', file)
     }
     const handlePositionAndPfp = () => {
-        setStep(6)
+        formik.handleSubmit()
     }
     const showBack = step > 1 && step !== 3
     console.log(formik.values, formik.errors)
