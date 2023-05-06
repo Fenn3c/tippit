@@ -8,8 +8,8 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
-import axios, { AxiosError } from "axios";
 import { useRouter } from 'next/router';
+import axiosInstance from "../../utils/axios";
 
 
 const signupSchema = Yup.object().shape({
@@ -32,7 +32,7 @@ export default function SignIn() {
             onSubmit: values => {
                 setLoading(true)
                 // alert(JSON.stringify(values))
-                axios.post('/auth/signin-sms', values).then(res => {
+                axiosInstance.post('/api/auth/signin-sms', values).then(res => {
                     setVerificationId(res.data.verificationId)
                     setStep(2)
                     setLoading(false)
@@ -52,12 +52,12 @@ export default function SignIn() {
     }
     const handleSMS = async (code: string) => {
         setLoading(true)
-        await axios.post('/sms/verify', {
+        await axiosInstance.post('/api/sms/verify', {
             'verificationId': verificationId,
             'code': code
         }).then((res) => {
             console.log(res)
-            axios.post('/auth/signin', {
+            axiosInstance.post('/api/auth/signin', {
                 phone: loginFormik.values.phone,
                 password: loginFormik.values.password,
                 phoneVerificationId: verificationId,

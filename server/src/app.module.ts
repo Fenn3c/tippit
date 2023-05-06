@@ -11,11 +11,16 @@ import { PhoneVerification } from './sms/phoneVerifications.entity';
 import { FilesModule } from './files/files.module';
 import { TipLinksModule } from './tip-links/tip-links.module';
 import { TipLink } from './tip-links/entities/tip-link.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, 'static'),
+    }),
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`
     }),
@@ -36,4 +41,4 @@ import { TipLink } from './tip-links/entities/tip-link.entity';
     TipLinksModule,
   ]
 })
-export class AppModule {}
+export class AppModule { }

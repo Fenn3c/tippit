@@ -24,20 +24,20 @@ export class TipLinksController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.tipLinksService.findOne(+id);
+  findOne(@Param('id') uuid: string) {
+    return this.tipLinksService.findOneByUUID(uuid);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('banner'))
-  update(@Param('id') id: string, @Body() updateTipLinkDto: UpdateTipLinkDto, @UploadedFile() banner, @Req() req) {
-    return this.tipLinksService.update(+id, updateTipLinkDto, req.user.id, banner);
+  update(@Param('id') uuid: string, @Body() updateTipLinkDto: UpdateTipLinkDto, @UploadedFile() banner, @Req() req) {
+    return this.tipLinksService.update(uuid, updateTipLinkDto, req.user.id, banner);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string, @Req() req) {
-    return this.tipLinksService.remove(+id, req.user.id);
+  remove(@Param('id') uuid: string, @Req() req) {
+    return this.tipLinksService.remove(uuid, req.user.id);
   }
 }

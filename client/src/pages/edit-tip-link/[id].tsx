@@ -10,10 +10,21 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from 'yup'
-import axiosInstance from "../../utils/axios";
+import axiosInstance from "../../../utils/axios";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+
+type Props = {
+    uuid: string,
+    name: string,
+    banner: string | null,
+    pageText: string,
+    thankText: string,
+    minAmount: number,
+    maxAmount: number,
+}
 
 
-const createTipLinkSchema = Yup.object().shape({
+const editTipLinkSchema = Yup.object().shape({
     name: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     pageText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     thankText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
@@ -32,41 +43,41 @@ const createTipLinkSchema = Yup.object().shape({
     ).nullable()
 })
 
-export default function CreateTipLink() {
+export default function EditTipLink({ uuid, name, banner, pageText, thankText, minAmount, maxAmount }: Props) {
     const [step, setStep] = useState<number>(1)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [touchedFields, setTouchedFields] = useState<any>({})
     const router = useRouter()
 
     const initialValues = {
-        name: 'Новая ссылка',
+        name: name,
         banner: null,
-        pageText: 'Оставьте чаевые',
-        thankText: 'Спасибо!',
-        minAmount: '50',
-        maxAmount: '3000'
+        pageText: pageText,
+        thankText: thankText,
+        minAmount: Math.round(minAmount / 100).toString(),
+        maxAmount: Math.round(maxAmount / 100).toString()
     }
 
     const formik = useFormik(
         {
             initialValues,
             onSubmit: values => {
+                console.log(touchedFields)
                 const formData = new FormData()
-                formData.append('name', values.name)
-                formData.append('pageText', values.pageText)
-                formData.append('thankText', values.thankText)
-                formData.append('minAmount', `${Number(values.minAmount) * 100}`)
-                formData.append('maxAmount', `${Number(values.maxAmount) * 100}`)
-                if (values.banner) formData.append('banner', values.banner)
-                axiosInstance.post('/api/tip-links', formData).then(res => {
+                if (touchedFields.name) formData.append('name', values.name)
+                if (touchedFields.pageText) formData.append('pageText', values.pageText)
+                if (touchedFields.thankText) formData.append('thankText', values.thankText)
+                if (touchedFields.minAmount) formData.append('minAmount', `${Number(values.minAmount) * 100}`)
+                if (touchedFields.maxAmount) formData.append('maxAmount', `${Number(values.maxAmount) * 100}`)
+                if (touchedFields.banner && values.banner) formData.append('banner', values.banner)
+
+                axiosInstance.patch(`/api/tip-links/${uuid}`, formData).then(res => {
                     setStep(4)
                 }).catch(err => {
                     console.error(err)
                     setStep(1)
                 })
-
-
             },
-            validationSchema: createTipLinkSchema
+            validationSchema: editTipLinkSchema
         })
     const handleBack = () => {
         if (step === 1) router.push('/')
@@ -74,7 +85,7 @@ export default function CreateTipLink() {
         setStep(step - 1)
     }
     const handleExit = () => {
-       router.push('/')
+        router.push('/')
     }
     const handleBanner = async (file: File) => {
         await formik.setFieldTouched('banner')
@@ -90,11 +101,12 @@ export default function CreateTipLink() {
         setStep(3)
     }
     const handleSubmit = () => {
+        setTouchedFields(formik.touched)
         formik.handleSubmit()
     }
 
     return (
-        <Layout title="Создание ссылки">
+        <Layout title="Изменение ссылки">
             <Card bigYpadding className="mb-4">
                 {step !== 4 && <MultiStepControls handleBack={handleBack} handleExit={handleExit} showBack showExit currentStep={step} totalSteps={3} />}
 
@@ -115,7 +127,9 @@ export default function CreateTipLink() {
                             onChange={handleBanner}
                             touched={formik.touched.banner}
                             error={formik.errors.banner}
-                            initialFile={formik.values.banner} />
+                            initialFile={formik.values.banner}
+                            initialLink={banner}
+                        />
 
                         <Button onClick={handleNameAndBanner}
                             text='Далее' disabled={Boolean(formik.errors.name?.length) || Boolean(formik.errors.banner?.length)} />
@@ -189,6 +203,33 @@ export default function CreateTipLink() {
 
             </Card>
         </Layout>
-
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
+    try {
+        const res = await axiosInstance.get(`/tip-links/${ctx.query.id}`, {
+            headers: ctx.req.headers
+        })
+        return {
+            props: {
+                uuid: res.data.uuid,
+                name: res.data.name,
+                banner: res.data.banner,
+                pageText: res.data.page_text,
+                thankText: res.data.thank_text,
+                minAmount: res.data.min_amount,
+                maxAmount: res.data.max_amount
+            }
+        }
+    } catch (e) {
+        console.error(e)
+        return {
+            props: {},
+            redirect: {
+                permanent: false,
+                destination: "/"
+            }
+        }
+    }
 }

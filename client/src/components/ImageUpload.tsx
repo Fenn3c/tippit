@@ -9,9 +9,10 @@ type Props = {
     squareImg?: boolean,
     onChange: (file: File) => void
     initialFile?: File | null
+    initialLink?: string | null
 }
 
-export default function ImageUpload({ label = '', bottomLabel = '', required = false, error, touched = false, squareImg = false, onChange, initialFile = null }: Props) {
+export default function ImageUpload({ label = '', bottomLabel = '', required = false, error, touched = false, squareImg = false, onChange, initialFile = null, initialLink }: Props) {
     const [selectedFile, setSelectedFile] = useState<File | null>(initialFile)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,9 +30,13 @@ export default function ImageUpload({ label = '', bottomLabel = '', required = f
     };
     return (
         <div className="w-full">
-            {selectedFile && !error &&
-                <img className={`h-16 w-auto rounded-xl mx-auto mb-3 ${squareImg && 'w-16 object-cover'}`} 
-                src={URL.createObjectURL(selectedFile)} alt="" />
+            {(selectedFile || initialLink) && !error &&
+                <img className={`h-16 w-auto rounded-xl mx-auto mb-3 ${squareImg && 'w-16 object-cover'}`}
+                    src={
+                        selectedFile ?
+                            URL.createObjectURL(selectedFile) :
+                            `${process.env.NEXT_PUBLIC_STATIC_HOST}/${initialLink}`
+                    } alt="" />
             }
             <label className='flex flex-col w-full'>
                 <span className='font-medium mb-2'>

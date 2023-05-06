@@ -11,7 +11,8 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import ImageUpload from "@/components/ImageUpload";
-import axios from 'axios'
+import axiosInstance from "../../utils/axios";
+
 import Link from "next/link";
 
 const signupSchema = Yup.object().shape({
@@ -37,7 +38,6 @@ const signupSchema = Yup.object().shape({
 export default function SignUp() {
     const [step, setStep] = useState<number>(1)
     const [loading, setLoading] = useState<boolean>(false)
-
     const initialValues = {
         phone: '',
         phoneVerificationId: '',
@@ -68,7 +68,7 @@ export default function SignUp() {
                 if (values.pfp)
                     formData.append('pfp', values.pfp)
 
-                axios.post('/auth/signup', formData).then(res => {
+                axiosInstance.post('/api/auth/signup', formData).then(res => {
                     setStep(6)
                 }).catch(err => {
                     console.error(err)
@@ -84,7 +84,7 @@ export default function SignUp() {
     const handleSMS = async (e: React.MouseEvent<HTMLButtonElement>) => {
         setLoading(true)
         try {
-            const res = await axios.get(`/users/user-exists?phone=${formik.values.phone}`)
+            const res = await axiosInstance.get(`/api/users/user-exists?phone=${formik.values.phone}`)
             if (res.data) {
                 formik.setFieldError('phone', 'Такой номер уже используется')
                 setLoading(false)
@@ -95,7 +95,7 @@ export default function SignUp() {
             setStep(1)
         }
 
-        axios.post('/sms/send', {
+        axiosInstance.post('/api/sms/send', {
             phone: formik.values.phone
         }).then((res) => {
             formik.setFieldValue('phoneVerificationId', res.data.verificationId)
@@ -115,7 +115,7 @@ export default function SignUp() {
 
         await formik.setFieldTouched('phoneVerify')
         console.log(formik.values)
-        await axios.post('/sms/verify', {
+        await axiosInstance.post('/api/sms/verify', {
             'verificationId': formik.values.phoneVerificationId,
             'code': pin
         }).then((res) => {

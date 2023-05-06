@@ -3,15 +3,14 @@ import ModalButton from '@/components/ModalButton';
 import TipLink from '@/components/TipLink';
 import Layout from '@/components/layouts/Layout'
 import Modal from '@/components/layouts/Modal';
-import axios from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import axiosInstance from '../../utils/axios';
 
 type TipLink = {
-  id: number
   name: string
   uuid: string
 }
@@ -21,14 +20,15 @@ type Props = {
 }
 
 export default function Home({ tipLinks }: Props) {
-  const [tipModal, setTipModal] = useState<number | null>(null)
+  const [tipModal, setTipModal] = useState<string | null>(null)
 
 
   const router = useRouter()
 
   const handleDeleteTipLink = async () => {
     if (!tipModal) return
-    await axios.delete(`/tip-links/${tipModal}`)
+    await axiosInstance.delete(`/api/tip-links/${tipModal}`)
+    setTipModal(null)
     router.reload()
   }
   const handleAdd = () => {
@@ -44,11 +44,11 @@ export default function Home({ tipLinks }: Props) {
               uuid={tipLink.uuid}
               key={index}
               name={tipLink.name}
-              onMoreClick={() => { setTipModal(tipLink.id) }}
+              onMoreClick={() => { setTipModal(tipLink.uuid) }}
             />
           )}
         </div>
-        <AddTipLinkButton onClick={handleAdd}/>
+        <AddTipLinkButton onClick={handleAdd} />
 
       </Layout>
       <Modal open={Boolean(tipModal)} onClose={() => setTipModal(null)}>
@@ -65,7 +65,7 @@ export default function Home({ tipLinks }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
   try {
-    const res = await axios.get('http://localhost:3001/tip-links', {
+    const res = await axiosInstance.get('/tip-links', {
       headers: ctx.req.headers
     })
     return {

@@ -10,7 +10,7 @@ type Props = {
 export default function Modal({ children, onClose, open = false }: Props) {
     if (open)
         return (
-            <div className='fixed left-0 right-0 bottom-0 top-0 bg-main-black bg-opacity-20'>
+            <div className='fixed z-50 left-0 right-0 bottom-0 top-0 bg-main-black bg-opacity-20'>
                 <div className='absolute left-0 right-0 bottom-0 top-1/4 p-8
              bg-main-white rounded-t-3xl border border-gray-stroke shadow-lg'>
                     <button onClick={onClose} className='block ml-auto'>

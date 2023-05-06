@@ -56,9 +56,13 @@ export class TipLinksService {
     return await this.tipLinksRepository.findOneBy({ id })
   }
 
-  async update(id: number, updateTipLinkDto: UpdateTipLinkDto, userId: number, banner: any) {
+  async findOneByUUID(uuid: string) {
+    return await this.tipLinksRepository.findOneBy({ uuid })
+  }
+
+  async update(uuid: string, updateTipLinkDto: UpdateTipLinkDto, userId: number, banner: any) {
     if (!userId) throw new UnauthorizedException('Пользователь не найден')
-    const tipLink = await this.findOne(id)
+    const tipLink = await this.findOneByUUID(uuid)
     if (!tipLink) throw new NotFoundException('Страница чаевых не найдена')
     if (tipLink.user.id !== userId) throw new ForbiddenException('У вас нет прав для удаления этой страницы чаевых')
 
@@ -84,9 +88,9 @@ export class TipLinksService {
 
   }
 
-  async remove(id: number, userId: number) {
+  async remove(uuid: string, userId: number) {
     if (!userId) throw new UnauthorizedException('Пользователь не найден')
-    const tipLink = await this.findOne(id)
+    const tipLink = await this.findOneByUUID(uuid)
     if (!tipLink) throw new NotFoundException('Страница чаевых не найдена')
     if (tipLink.user.id !== userId) throw new ForbiddenException('У вас нет прав для удаления этой страницы чаевых')
     return this.tipLinksRepository.remove(tipLink);

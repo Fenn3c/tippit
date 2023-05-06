@@ -4,7 +4,7 @@ const nextConfig = {
     async rewrites() {
       return [
           {
-              source: '/:slug*',
+              source: '/api/:slug*',
               destination: `${process.env.SERVER_HOST}/:slug*` // for proxy
           },
       ]
