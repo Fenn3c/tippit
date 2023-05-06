@@ -5,7 +5,7 @@ const nextConfig = {
       return [
           {
               source: '/:slug*',
-              destination: 'http://localhost:3001/:slug*' // for proxy
+              destination: `${process.env.SERVER_HOST}/:slug*` // for proxy
           },
       ]
   },

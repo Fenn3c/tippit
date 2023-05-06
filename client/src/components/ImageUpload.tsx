@@ -8,10 +8,11 @@ type Props = {
     touched?: boolean,
     squareImg?: boolean,
     onChange: (file: File) => void
+    initialFile?: File | null
 }
 
-export default function ImageUpload({ label = '', bottomLabel = '', required = false, error, touched = false, squareImg = false, onChange }: Props) {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+export default function ImageUpload({ label = '', bottomLabel = '', required = false, error, touched = false, squareImg = false, onChange, initialFile = null }: Props) {
+    const [selectedFile, setSelectedFile] = useState<File | null>(initialFile)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
