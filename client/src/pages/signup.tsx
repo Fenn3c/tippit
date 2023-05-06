@@ -12,6 +12,7 @@ import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import ImageUpload from "@/components/ImageUpload";
 import axios from 'axios'
+import Link from "next/link";
 
 const signupSchema = Yup.object().shape({
     phone: Yup.string().required('Обязательное поле').matches(/^[78]\d{10}$/, 'Неверный формат номера'),
@@ -34,8 +35,8 @@ const signupSchema = Yup.object().shape({
     ).nullable()
 })
 export default function SignUp() {
-    const [step, setStep] = useState(1)
-    const [loading, setLoading] = useState(false)
+    const [step, setStep] = useState<number>(1)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const initialValues = {
         phone: '',
@@ -53,7 +54,7 @@ export default function SignUp() {
         {
             initialValues,
             onSubmit: values => {
-                alert(JSON.stringify(values))
+                // alert(JSON.stringify(values))
 
                 const formData = new FormData()
                 formData.append('phone', values.phone)
@@ -66,10 +67,6 @@ export default function SignUp() {
                 formData.append('phoneVerify', values.phoneVerify)
                 if (values.pfp)
                     formData.append('pfp', values.pfp)
-
-
-
-
 
                 axios.post('/auth/signup', formData).then(res => {
                     setStep(6)
@@ -84,8 +81,20 @@ export default function SignUp() {
         })
 
 
-    const handleSMS = (e: React.MouseEvent<HTMLButtonElement>) => {
-        setStep(2)
+    const handleSMS = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        setLoading(true)
+        try {
+            const res = await axios.get(`/users/user-exists?phone=${formik.values.phone}`)
+            if (res.data) {
+                formik.setFieldError('phone', 'Такой номер уже используется')
+                setLoading(false)
+                return
+            }
+        } catch (e) {
+            console.error(e)
+            setStep(1)
+        }
+
         axios.post('/sms/send', {
             phone: formik.values.phone
         }).then((res) => {
@@ -93,11 +102,17 @@ export default function SignUp() {
             console.log(res)
         }).catch((err) => {
             console.error(err)
+            formik.setFieldError('phone', err.response.data.message[0])
             setStep(1)
+        }).finally(() => {
+            setLoading(false)
         })
+        setStep(2)
     }
     const handleSmsPin = async (pin: string) => {
+        setLoading(true)
         console.log(pin)
+
         await formik.setFieldTouched('phoneVerify')
         console.log(formik.values)
         await axios.post('/sms/verify', {
@@ -109,6 +124,8 @@ export default function SignUp() {
         }).catch((err) => {
             console.error(err)
             formik.setFieldError('phoneVerify', 'Неверный PIN')
+        }).finally(() => {
+            setLoading(false)
         })
     }
 
@@ -131,13 +148,14 @@ export default function SignUp() {
         formik.handleSubmit()
     }
     const showBack = step > 1 && step !== 3
-    console.log(formik.values, formik.errors)
+    // console.log(formik.values, formik.errors)
     return (
         <Layout title="Регистрация">
             <Card bigYpadding className="mb-4">
                 {step !== 6 &&
                     <MultiStepControls handleBack={handleBack} showBack={showBack} currentStep={step} totalSteps={5} />
                 }
+                {/* {error && <p className="text-error">{error}</p>} */}
                 {step === 1 && (
                     <div className="flex flex-col gap-y-8">
                         <Input mask="+7 (999) 999-99-99" label="Номер телефона" placeholder="+7 (___) ___-__-__" type="tel" required
@@ -148,16 +166,17 @@ export default function SignUp() {
                             value={formik.values.phone}
                             touched={formik.touched.phone}
                         />
-                        <Button text='Отправить SMS' onClick={handleSMS} disabled={Boolean(formik.errors.phone?.length) || !formik.touched.phone} />
+                        <Button text='Отправить SMS' onClick={handleSMS} disabled={Boolean(formik.errors.phone?.length) || !formik.touched.phone || loading} />
                     </div>
                 )}
                 {step === 2 && (
                     <div className="flex flex-col gap-y-8 items-center">
                         <PinInput title="Введите код из SMS" length={5} onComplete={handleSmsPin}
                             error={formik.errors.phoneVerify}
-                            touched={formik.touched.phoneVerify} />
+                            touched={formik.touched.phoneVerify}
+                            loading={loading} />
 
-                        <TextButton text="Отправить повторно" />
+                        {/* <TextButton text="Отправить повторно" /> */}
                     </div>
                 )}
                 {step === 3 && (
@@ -234,7 +253,10 @@ export default function SignUp() {
                             <p className="font-bold text-2xl mb-2">Регистрация завершена!</p>
                             <p className="text-center text-gray-text">Войдите в аккаунт <br /> для использования сервиса</p>
                         </div>
-                        <Button type="submit" text='Войти в аккаунт' onClick={() => { formik.handleSubmit() }} />
+                        <Link href="/signin">
+                            <Button type="submit" text='Войти в аккаунт' />
+                        </Link>
+
                     </div>
                 )}
 

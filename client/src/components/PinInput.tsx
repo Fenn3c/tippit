@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import LoadingIcon from './LoadingIcon';
 
 interface PinInputProps {
     title?: string
@@ -7,9 +8,10 @@ interface PinInputProps {
     onComplete: (pin: string) => void
     error?: string
     touched?: boolean
+    loading?: boolean
 }
 
-const PinInput: React.FC<PinInputProps> = ({ length, onComplete, title = '', type = 'number', error, touched = false}) => {
+const PinInput: React.FC<PinInputProps> = ({ length, onComplete, title = '', type = 'number', error, touched = false, loading = false }) => {
     const [pin, setPin] = useState<string[]>(new Array(length).fill(''));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -60,23 +62,27 @@ const PinInput: React.FC<PinInputProps> = ({ length, onComplete, title = '', typ
     return (
         <div className='flex flex-col items-center gap-y-2'>
             <p className='text-center font-medium'>{title}</p>
-            <div className="flex gap-x-2">
-                {pin.map((digit, index) => (
-                    <input
-                        className={inputStyle}
-                        key={index}
-                        type={type}
-                        maxLength={1}
-                        value={digit}
-                        onChange={(event) => handleChange(event, index)}
-                        onFocus={handleFocus}
-                        onPaste={handlePaste}
-                        ref={(ref) => inputRefs.current[index] = ref}
-                        onKeyDown={(event) => handleKeyDown(event, index)}
-                        autoFocus={index === 0}
-                    />
-                ))}
-            </div>
+            {!loading ?
+                <div className="flex gap-x-2">
+                    {pin.map((digit, index) => (
+                        <input
+                            className={inputStyle}
+                            key={index}
+                            type={type}
+                            maxLength={1}
+                            value={digit}
+                            onChange={(event) => handleChange(event, index)}
+                            onFocus={handleFocus}
+                            onPaste={handlePaste}
+                            ref={(ref) => inputRefs.current[index] = ref}
+                            onKeyDown={(event) => handleKeyDown(event, index)}
+                            autoFocus={index === 0}
+                        />
+                    ))}
+                </div>
+                : <LoadingIcon />}
+
+
             {(error && touched) && <span className='font-medium text-xs text-error mt-1'>{error}</span>}
         </div>
 

@@ -23,4 +23,14 @@ export class FilesService {
             throw new InternalServerErrorException('Произошла ошибка при записи файла')
         }
     }
+
+    async deleteFile(name: string) {
+        try {
+            const filePath = path.resolve(__dirname, '..', 'static')
+            fs.unlinkSync(path.join(filePath, name))
+        } catch (e) {
+            console.error(e)
+            throw new InternalServerErrorException('Произошла ошибка при удалении файла')
+        }
+    }
 }

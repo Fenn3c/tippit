@@ -9,6 +9,7 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import axios, { AxiosError } from "axios";
+import { useRouter } from 'next/router';
 
 
 const signupSchema = Yup.object().shape({
@@ -19,7 +20,8 @@ export default function SignIn() {
     const [step, setStep] = useState<1 | 2>(1)
     const [error, setError] = useState<string | null>(null)
     const [verificationId, setVerificationId] = useState<string | null>(null)
-
+    const [loading, setLoading] = useState<boolean>(false)
+    const router = useRouter()
     const loginFormik = useFormik(
         {
             initialValues: {
@@ -28,13 +30,16 @@ export default function SignIn() {
                 password: '',
             },
             onSubmit: values => {
-                alert(JSON.stringify(values))
+                setLoading(true)
+                // alert(JSON.stringify(values))
                 axios.post('/auth/signin-sms', values).then(res => {
                     setVerificationId(res.data.verificationId)
                     setStep(2)
+                    setLoading(false)
                 }).catch((err: any) => {
-
                     setError(err.response?.data.message)
+                }).finally(() => {
+                    setLoading(false)
                 })
             },
             validationSchema: signupSchema
@@ -46,7 +51,7 @@ export default function SignIn() {
 
     }
     const handleSMS = async (code: string) => {
-
+        setLoading(true)
         await axios.post('/sms/verify', {
             'verificationId': verificationId,
             'code': code
@@ -58,19 +63,19 @@ export default function SignIn() {
                 phoneVerificationId: verificationId,
                 phoneVerify: res.data.accessCode
             }).then(res => {
-                alert(res.data.token)
+                router.push('/')
+                localStorage.setItem('token', res.data.token);
+                // alert(res.data.token)
+
             }).catch(err => {
                 console.error(err)
-                alert(err)
             })
-
-
-
         }).catch((err) => {
             console.error(err)
             loginFormik.setFieldError('code', 'Неверный PIN')
+        }).finally(() => {
+            setLoading(false)
         })
-
 
     }
     return (
@@ -78,7 +83,7 @@ export default function SignIn() {
             <Card bigYpadding className="mb-4">
                 {step === 1 && (
                     <div className="flex flex-col gap-y-8">
-                        <p className="text-error">{error}</p>
+                        {error && <p className="text-error">{error}</p>}
                         <Input mask="+7 (999) 999-99-99" label="Номер телефона" placeholder="+7 (___) ___-__-__" type="tel" required
                             onChange={e =>
                                 loginFormik.setFieldValue('phone', formatPhoneNumber(e.target.value))}
@@ -95,15 +100,16 @@ export default function SignIn() {
                             value={loginFormik.values.password}
                             error={loginFormik.errors.password}
                         />
-                        <Button text='Войти' onClick={handleLogin} disabled={Boolean(loginFormik.errors.phone?.length) || !loginFormik.touched.phone} />
+                        <Button text='Войти' onClick={handleLogin}
+                            disabled={Boolean(loginFormik.errors.phone?.length) || !loginFormik.touched.phone || loading} />
                     </div>)}
                 {step === 2 && (
                     <div className="flex flex-col gap-y-8">
                         <PinInput title="Введите код из SMS" length={5} onComplete={handleSMS}
                             error={loginFormik.errors.code}
-                            touched={loginFormik.touched.code} />
+                            touched={loginFormik.touched.code} loading={loading} />
 
-                        <TextButton text="Отправить повторно" />
+                        {/* <TextButton text="Отправить повторно" /> */}
                     </div>)}
 
 

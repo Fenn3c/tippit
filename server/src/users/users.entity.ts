@@ -1,11 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { TipLink } from 'src/tip-links/entities/tip-link.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
-@Entity({name: 'users'})
+@Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ nullable: false, unique: true})
+    @Column({ nullable: false, unique: true })
     phone: string
 
     @Column({ nullable: false })
@@ -17,10 +18,12 @@ export class User {
     @Column({ nullable: false })
     password: string
 
-    @Column({ nullable: false, default: 'Получатель чаевых'})
+    @Column({ nullable: false, default: 'Получатель чаевых' })
     position: string
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     pfp: string
 
+    @OneToMany(() => TipLink, (tipLink) => tipLink.user)
+    tipLinks: TipLink[]
 }

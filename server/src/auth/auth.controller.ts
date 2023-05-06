@@ -1,9 +1,10 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignInAndSendCodeDto } from './dto/sign-in-sms.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -14,8 +15,9 @@ export class AuthController {
     }
 
     @Post('/signin')
-    signin(@Body() signInDto: SignInDto) {
-        return this.authService.signin(signInDto)
+    async signin(@Body() signInDto: SignInDto, @Res({ passthrough: true }) res: Response) {
+        const { token } = await this.authService.signin(signInDto)
+        res.cookie('auth_token', token, { maxAge: 600_000_000, httpOnly: true })
     }
 
     @Post('/signup')

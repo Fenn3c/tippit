@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { SmsModule } from './sms/sms.module';
 import { PhoneVerification } from './sms/phoneVerifications.entity';
 import { FilesModule } from './files/files.module';
+import { TipLinksModule } from './tip-links/tip-links.module';
+import { TipLink } from './tip-links/entities/tip-link.entity';
 
 @Module({
   controllers: [AppController],
@@ -24,13 +26,14 @@ import { FilesModule } from './files/files.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, PhoneVerification],
+      entities: [User, PhoneVerification, TipLink],
       synchronize: true, // delete in production
     }),
     UsersModule,
     AuthModule,
     SmsModule,
     FilesModule,
+    TipLinksModule,
   ]
 })
 export class AppModule {}
