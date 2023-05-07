@@ -12,7 +12,9 @@ import { FilesModule } from './files/files.module';
 import { TipLinksModule } from './tip-links/tip-links.module';
 import { TipLink } from './tip-links/entities/tip-link.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PaymentsModule } from './payments/payments.module';
 import * as path from 'path';
+import { Payment } from './payments/entities/payment.entity';
 
 @Module({
   controllers: [AppController],
@@ -31,7 +33,7 @@ import * as path from 'path';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, PhoneVerification, TipLink],
+      entities: [User, PhoneVerification, TipLink, Payment],
       synchronize: true, // delete in production
     }),
     UsersModule,
@@ -39,6 +41,7 @@ import * as path from 'path';
     SmsModule,
     FilesModule,
     TipLinksModule,
+    PaymentsModule,
   ]
 })
 export class AppModule { }

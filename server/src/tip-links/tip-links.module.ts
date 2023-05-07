@@ -16,6 +16,7 @@ import { FilesModule } from 'src/files/files.module';
     AuthModule
   ],
   controllers: [TipLinksController],
-  providers: [TipLinksService]
+  providers: [TipLinksService],
+  exports: [TipLinksService]
 })
 export class TipLinksModule { }

@@ -9,8 +9,5 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  @Get('/commision-percent')
-  getCommisionPercent(): number {
-    return +process.env.COMMISION_PERCENT
-  }
+
 }

@@ -1,5 +1,6 @@
+import { Payment } from "src/payments/entities/payment.entity";
 import { User } from "src/users/users.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'tip_links' })
 export class TipLink {
@@ -12,7 +13,7 @@ export class TipLink {
     @Column()
     name: string
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     banner: string
 
     @Column({ default: 'Оставить чаевые' })
@@ -29,5 +30,8 @@ export class TipLink {
 
     @ManyToOne(() => User, (user) => user.tipLinks)
     user: User
+
+    @OneToMany(() => Payment, (payment) => payment.tip_link)
+    payments: Payment[]
 
 }

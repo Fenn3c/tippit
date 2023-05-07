@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Payment } from 'src/payments/entities/payment.entity';
 import { TipLink } from 'src/tip-links/entities/tip-link.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
@@ -27,4 +28,7 @@ export class User {
 
     @OneToMany(() => TipLink, (tipLink) => tipLink.user)
     tipLinks: TipLink[]
+
+    @OneToMany(() => Payment, (payment) => payment.receiver)
+    payments: Payment[]
 }

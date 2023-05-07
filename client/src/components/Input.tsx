@@ -8,6 +8,7 @@ type Props = {
     placeholder?: string
     required?: boolean,
     type?: 'text' | 'password' | 'tel' | 'number'
+    numberic?: boolean
     mask?: string
     error?: string
     touched?: boolean
@@ -16,7 +17,7 @@ type Props = {
 }
 
 export default function Input({ value = '', label = '', bottomLabel = '', placeholder = '',
-    required = false, type = "text", error, touched = false, mask, onChange, onFocus }: Props) {
+    required = false, type = "text", error, touched = false, mask, numberic = false, onChange, onFocus }: Props) {
 
 
     const inputStyles = `bg-gray-bg border border-gray-stroke rounded-xl py-3 px-4 font-medium
@@ -33,12 +34,15 @@ export default function Input({ value = '', label = '', bottomLabel = '', placeh
                     placeholder={placeholder}
                     onChange={onChange}
                     onFocus={onFocus}
+                    inputMode={numberic ? 'numeric' : undefined}
                 /> :
                 <input className={inputStyles}
                     type={type}
                     placeholder={placeholder}
                     onChange={onChange}
-                    onFocus={onFocus} value={value}/>
+                    onFocus={onFocus} value={value}
+                    inputMode={numberic ? 'numeric' : undefined}
+                />
             }
             {error && touched ? <span className='font-medium text-xs text-error mt-1'>{error}</span>
                 :
