@@ -57,7 +57,11 @@ export class TipLinksService {
   }
 
   async findOneByUUID(uuid: string) {
-    return await this.tipLinksRepository.findOneBy({ uuid })
+    // return await this.tipLinksRepository.findOneBy({ uuid })
+    return await this.tipLinksRepository.findOne({
+      relations: ['user'],
+      where: { uuid: uuid }
+    })
   }
 
   async update(uuid: string, updateTipLinkDto: UpdateTipLinkDto, userId: number, banner: any) {

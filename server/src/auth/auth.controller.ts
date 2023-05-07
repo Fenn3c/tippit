@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Patch, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -25,4 +25,10 @@ export class AuthController {
     signup(@Body() signUpDto: SignUpDto, @UploadedFile() pfp) {
         return this.authService.signup(signUpDto, pfp)
     }
+
+    @Post('/exit')
+    exit(@Res({passthrough: true}) res: Response) {
+        res.clearCookie('auth_token')
+    }
+
 }

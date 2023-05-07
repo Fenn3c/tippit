@@ -3,8 +3,8 @@ import TextButton from './TextButton'
 import Progress from './Progress'
 
 type Props = {
-    currentStep: number,
-    totalSteps: number,
+    currentStep?: number,
+    totalSteps?: number,
     handleBack?: React.MouseEventHandler<HTMLSpanElement>
     handleExit?: React.MouseEventHandler<HTMLSpanElement>
     showBack?: boolean
@@ -15,9 +15,10 @@ export default function MultiStepControls({ currentStep, totalSteps, handleBack,
     return (
         <div className='flex justify-between items-center mb-8'>
             {showBack && <TextButton text='Назад' onClick={handleBack} />}
-            <div className="mx-auto">
-                <Progress value={currentStep} maxValue={totalSteps} />
-            </div>
+            {currentStep &&
+                <div className="mx-auto">
+                    <Progress value={currentStep} maxValue={totalSteps} />
+                </div>}
             {showExit && <TextButton text='Выйти' onClick={handleExit} />}
         </div>
     )

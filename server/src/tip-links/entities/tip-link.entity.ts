@@ -27,7 +27,7 @@ export class TipLink {
     @Column()
     max_amount: number
 
-    @ManyToOne(() => User, (user) => user.tipLinks, {eager: true})
+    @ManyToOne(() => User, (user) => user.tipLinks)
     user: User
 
 }
