@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import axiosInstance from '../../utils/axios';
+import axiosInstance from '../utils/axios';
 
 type TipLink = {
   name: string

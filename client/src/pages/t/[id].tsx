@@ -7,8 +7,8 @@ import Switch from "@/components/Switch";
 import UserCard from "@/components/UserCard";
 import { useFormik } from "formik";
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import axiosInstance from "../../../utils/axios";
 import { formatCommission } from "@/utils/formatCommission";
+import axiosInstance from "@/utils/axios";
 
 
 type Props = {
@@ -53,7 +53,10 @@ export default function tipLink({ banner, pageText, thankText, minAmount, maxAmo
 
     return (
         <Layout cleanHeader>
-            <img className="absolute top-16 left-0 w-full h-48 bg-blue-100" src={banner ? `${process.env.NEXT_PUBLIC_STATIC_HOST}/${banner}` : 'test'} alt="" />
+            {banner ?
+                <img className="fixed top-16 left-0 w-screen h-48 bg-blue-100" src={`${process.env.NEXT_PUBLIC_STATIC_HOST}/${banner}`} alt="" /> :
+                <div className="fixed top-16 left-0 w-screen h-48 bg-blue-100" />
+            }
             <div className="flex flex-col relative z-10 gap-y-8 mb-4">
                 <UserCard fullname={`${userName} ${userSurname}`} pfp={userPfp} position={userPosition} />
                 <Card>
@@ -69,7 +72,7 @@ export default function tipLink({ banner, pageText, thankText, minAmount, maxAmo
                         after:h-full 
                         after:bg-gradient-to-l
                         after:from-main-white">
-                            <div className="overflow-x-scroll">
+                            <div className="overflow-x-scroll hide-scrollbar">
                                 <div className="flex gap-x-2">
                                     <RoundButton text="+50 ₽" />
                                     <RoundButton text="+100 ₽" />

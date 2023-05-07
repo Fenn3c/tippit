@@ -11,7 +11,7 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import ImageUpload from "@/components/ImageUpload";
-import axiosInstance from "../../utils/axios";
+import axiosInstance from "../utils/axios";
 
 import Link from "next/link";
 
@@ -150,7 +150,7 @@ export default function SignUp() {
     const showBack = step > 1 && step !== 3
     // console.log(formik.values, formik.errors)
     return (
-        <Layout title="Регистрация">
+        <Layout title="Регистрация" cleanHeader>
             <Card bigYpadding className="mb-4">
                 {step !== 6 &&
                     <MultiStepControls handleBack={handleBack} showBack={showBack} currentStep={step} totalSteps={5} />

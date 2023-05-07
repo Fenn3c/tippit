@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from 'yup'
-import axiosInstance from "../../utils/axios";
+import axiosInstance from "../utils/axios";
 
 
 const createTipLinkSchema = Yup.object().shape({

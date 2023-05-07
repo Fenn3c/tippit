@@ -9,7 +9,7 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import { useRouter } from 'next/router';
-import axiosInstance from "../../utils/axios";
+import axiosInstance from "../utils/axios";
 
 
 const signupSchema = Yup.object().shape({
@@ -79,7 +79,7 @@ export default function SignIn() {
 
     }
     return (
-        <Layout title="Вход">
+        <Layout title="Вход" cleanHeader>
             <Card bigYpadding className="mb-4">
                 {step === 1 && (
                     <div className="flex flex-col gap-y-8">
