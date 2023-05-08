@@ -10,9 +10,10 @@ type Props = {
     title?: string
     onAddClick?: React.MouseEventHandler<HTMLButtonElement>
     cleanHeader?: boolean
+    smallTitleMargin?: boolean
 }
 
-export default function Layout({ children, title = '', onAddClick, cleanHeader = false }: Props) {
+export default function Layout({ children, title = '', onAddClick, cleanHeader = false, smallTitleMargin = false }: Props) {
     const [modal, setModal] = useState<boolean>(false)
     return (
         <>
@@ -25,7 +26,7 @@ export default function Layout({ children, title = '', onAddClick, cleanHeader =
                 />
             </div>
             <main className="bg-gray-bg px-4 pb-8 pt-24 relative max-w-lg m-auto">
-                {title && <h1 className='text-2xl font-bold mb-8'>{title}</h1>}
+                {title && <h1 className={`text-2xl font-bold  ${smallTitleMargin ? 'mb-2' : 'mb-8'}`}>{title}</h1>}
                 {children}
             </main>
             <Modal open={modal} onClose={() => setModal(false)}>

@@ -29,7 +29,7 @@ export default function Home({ tipLinks }: Props) {
     if (!tipModal) return
     await axiosInstance.delete(`/api/tip-links/${tipModal}`)
     setTipModal(null)
-    router.reload()
+    router.replace(router.asPath);
   }
   const handleAdd = () => {
     router.push('/create-tip-link')

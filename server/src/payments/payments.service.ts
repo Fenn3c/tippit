@@ -7,18 +7,47 @@ import { v4 } from 'uuid';
 import { TipLinksService } from 'src/tip-links/tip-links.service';
 import { UsersService } from 'src/users/users.service';
 import axios from 'axios';
+import { User } from 'src/users/users.entity';
 
 const YOOKASSA_API = 'https://api.yookassa.ru/v3/'
 
 @Injectable()
 export class PaymentsService {
   constructor(@InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly tipLinksService: TipLinksService,
     private readonly usersService: UsersService) { }
 
   public calculateCommission(amount: number): number {
     const percent = Number(process.env.COMMISION_PERCENT)
     return Math.ceil(amount / 100 * percent)
+  }
+
+  public async getOperations(userId: number) {
+    const user = await this.usersService.getUserById(userId)
+    if (!user) throw new BadRequestException('Пользователь не найден')
+    const operations = await this.paymentRepository.find({
+      where: {
+        receiver: user,
+        paid: true
+      },
+      order: {
+        pay_date: 'DESC'
+      }
+    })
+    const operationsMapped = operations.map(operation => {
+      return {
+        type: 'tip',
+        date: operation.pay_date,
+        amount: operation.amount,
+        comment: operation.comment,
+      }
+    }
+    )
+    return {
+      balance: user.balance,
+      operations: operationsMapped
+    }
   }
 
   private async createYookassaPayment(amount: number, paymentUUID: string): Promise<{
@@ -107,17 +136,26 @@ export class PaymentsService {
   async confirmPayment(uuid: string) {
     const payment = await this.findOneByUUID(uuid)
     if (!payment) throw new BadRequestException('Платеж не найден')
+    if (payment.paid) throw new BadRequestException('Платеж уже подтвержден')
+    const user = await this.userRepository.findOneBy(payment.receiver)
+    if (!user) throw new BadRequestException('Пользователь не найден')
     const checkPayement = await this.checkYookassaPayment(payment.payment_id)
     if (checkPayement.status !== 'succeeded') throw new InternalServerErrorException('Платеж не успешен')
     payment.pay_date = new Date()
     payment.paid = true
-    return await this.paymentRepository.save(payment)
+    let savedPayment = null
+    await this.paymentRepository.manager.transaction(async (manager) => {
+      savedPayment = await manager.save(payment)
+      user.balance = user.balance + payment.amount
+      await manager.save(user)
+    })
+    return savedPayment
   }
 
 
   async findOneByUUID(uuid: string) {
     return await this.paymentRepository.findOne({
-      relations: ['tip_link'],
+      relations: ['tip_link', 'receiver'],
       where: { uuid: uuid }
     })
   }

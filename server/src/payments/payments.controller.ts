@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('payments')
 export class PaymentsController {
@@ -10,6 +11,13 @@ export class PaymentsController {
   getCommisionPercent(): number {
     return +process.env.COMMISION_PERCENT
   }
+
+  @Get('/operations')
+  @UseGuards(JwtAuthGuard)
+  findMe(@Req() req) {
+    return this.paymentsService.getOperations(req.user.id);
+  }
+
 
   @Get('/confirm/:uuid')
   confirm(@Param('uuid') uuid: string) {

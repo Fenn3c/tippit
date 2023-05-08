@@ -26,6 +26,9 @@ export class User {
     @Column({ nullable: true })
     pfp: string
 
+    @Column({ nullable: false, type: 'int', default: 0 })
+    balance: number
+
     @OneToMany(() => TipLink, (tipLink) => tipLink.user)
     tipLinks: TipLink[]
 
