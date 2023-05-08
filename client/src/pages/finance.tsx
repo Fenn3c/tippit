@@ -6,6 +6,7 @@ import Button from '@/components/Button';
 import FinanceOperation from '@/components/FinanceOperation';
 import { capitalize } from '@/utils/capitalize';
 import { formatMoney } from '@/utils/formatMoney';
+import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 
 const operationsByMonth = (operations: Operation[]) => {
     const reducedOperations = operations.reduce((acc: any, operation) => {
@@ -39,11 +40,12 @@ type Props = {
 
 export default function Finance({ balance, operations }: Props) {
     const router = useRouter()
+    const animatedBalance = useAnimatedCounter(balance, 0, .5, 0)
 
     return (
         <>
             <Layout title="Баланс" smallTitleMargin>
-                <p className="font-bold text-3xl mb-8">{formatMoney(balance)}</p>
+                <p className="font-bold text-3xl mb-8">{formatMoney(animatedBalance)}</p>
                 <Button text="Вывести на карту" className="mb-8" />
                 <h2 className='text-2xl font-bold mb-6'>История операций</h2>
                 {operations.map(({ month, operations }, index) =>

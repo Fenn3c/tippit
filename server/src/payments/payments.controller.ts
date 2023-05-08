@@ -14,8 +14,14 @@ export class PaymentsController {
 
   @Get('/operations')
   @UseGuards(JwtAuthGuard)
-  findMe(@Req() req) {
+  operations(@Req() req) {
     return this.paymentsService.getOperations(req.user.id);
+  }
+
+  @Get('/statistcs/:period')
+  @UseGuards(JwtAuthGuard)
+  statistcs(@Param('period') period: StatisticsPeriod, @Req() req) {
+    return this.paymentsService.getStatistics(req.user.id, period);
   }
 
 

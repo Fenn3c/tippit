@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import Button from './Button'
 import MoreButtonSvg from './MoreButtonSvg'
 import ShareIcon from './ShareIcon'
+import { useRouter } from 'next/router'
 
 
 const DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export default function TipLink({ name, uuid, onMoreClick }: Props) {
+    const router = useRouter()
     const handleShare = () => {
         if (!navigator.share) return
         navigator.share({

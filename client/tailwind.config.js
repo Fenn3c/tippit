@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -6,8 +7,15 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontFamily: {
+      sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+    },
     extend: {
-      colors:{
+      padding: {
+        '1/2': '50%',
+        'full': '100%'
+      },
+      colors: {
         'main-white': '#FFFFFF',
         'main-50': '#ECF4FF',
         'main-100': '#D8EAFF',

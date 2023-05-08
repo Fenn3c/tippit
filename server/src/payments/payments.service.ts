@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { TipLinksService } from 'src/tip-links/tip-links.service';
 import { UsersService } from 'src/users/users.service';
@@ -47,6 +47,78 @@ export class PaymentsService {
     return {
       balance: user.balance,
       operations: operationsMapped
+    }
+  }
+  private getPeriodDates(period: StatisticsPeriod) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
+    const startOfWeek = new Date(year, month, day - today.getDay());
+    const startOfMonth = new Date(year, month, 1);
+    const startOfYear = new Date(year, 0, 1);
+    switch (period) {
+      case StatisticsPeriod.Year:
+        return {
+          startDate: startOfYear,
+          endDate: new Date(year, 11, 31),
+        }
+      case StatisticsPeriod.Month:
+        return {
+          startDate: startOfMonth,
+          endDate: new Date(year, month + 1, 0),
+        }
+      case StatisticsPeriod.Week:
+        return {
+          startDate: startOfWeek,
+          endDate: new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000),
+        }
+      case StatisticsPeriod.Total:
+        return undefined
+      default:
+        throw new BadRequestException('Указан неверный период')
+    }
+  }
+
+  private calculatePercentageIncrease(arr: number[]): number {
+    if (arr.length < 2) {
+      return 0;
+    }
+
+    const lastElement = arr[arr.length - 1];
+    const previousElement = arr[arr.length - 2];
+
+    return Number((((lastElement - previousElement) / previousElement) * 100).toFixed(2));
+  }
+
+
+  public async getStatistics(userId: number, period: StatisticsPeriod) {
+    const user = await this.usersService.getUserById(userId)
+    if (!user) throw new BadRequestException('Пользователь не найден')
+    const periodDates = this.getPeriodDates(period)
+    const operations = await this.paymentRepository.find({
+      where: {
+        receiver: user,
+        paid: true,
+        pay_date: periodDates ? Between(periodDates.startDate, periodDates.endDate) : undefined
+      },
+      order: {
+        pay_date: 'ASC'
+      }
+    })
+    const operationsMapped = operations.map(operation => {
+      return { date: operation.pay_date, value: operation.amount }
+    })
+    const dates = operationsMapped.map(operation => operation.date)
+    const values = operationsMapped.map(operation => operation.value)
+    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true }))
+    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true }))
+    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true })
+    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true })
+    const percent = this.calculatePercentageIncrease(values)
+    return {
+      period, total, avg, min, max,
+      payments: { percent, dates, values }
     }
   }
 
