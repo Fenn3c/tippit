@@ -92,7 +92,9 @@ export default function SignUp() {
             }
         } catch (e) {
             console.error(e)
+            formik.setFieldError('phone', 'Ошибка проверки номера')
             setStep(1)
+            return
         }
 
         axiosInstance.post('/api/sms/send', {
@@ -167,6 +169,12 @@ export default function SignUp() {
                             touched={formik.touched.phone}
                         />
                         <Button text='Отправить SMS' onClick={handleSMS} disabled={Boolean(formik.errors.phone?.length) || !formik.touched.phone || loading} />
+                        <div className="flex justify-center">
+                            <Link href="/signin">
+                                <TextButton text="Уже есть аккаунт?" />
+                            </Link>
+                        </div>
+
                     </div>
                 )}
                 {step === 2 && (

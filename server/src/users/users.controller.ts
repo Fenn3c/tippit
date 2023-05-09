@@ -24,6 +24,12 @@ export class UsersController {
     findMe(@Req() req) {
         return this.usersService.getUserById(req.user.id);
     }
+    @Get('/user-exists')
+    async userExists(@Req() request: Request) {
+        const phone = request.query.phone
+        if (!phone) throw new BadRequestException('Телефон не указан')
+        return Boolean(await this.usersService.getUserByPhone(phone.toString()))
+    }
 
     @Get(':id')
     findOne(@Param('id') id: number) {
@@ -44,10 +50,5 @@ export class UsersController {
         return this.usersService.update(updateUserDto, req.user.id, pfp);
     }
 
-    @Get('/user-exists')
-    async userExists(@Req() request: Request) {
-        const phone = request.query.phone
-        if (!phone) throw new BadRequestException('Телефон не указан')
-        return Boolean(await this.usersService.getUserByPhone(phone.toString()))
-    }
+
 }

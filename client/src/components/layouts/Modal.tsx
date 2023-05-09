@@ -11,8 +11,6 @@ type Props = {
 export default function Modal({ children, onClose, open = false }: Props) {
 
     return (
-
-
         <motion.div
             initial={{
                 opacity: 0
@@ -22,7 +20,7 @@ export default function Modal({ children, onClose, open = false }: Props) {
                 pointerEvents: open ? 'auto' : 'none'
             }}
             transition={{ duration: 0.1 }}
-            className='fixed z-50 left-0 right-0 bottom-0 top-0 bg-main-black bg-opacity-20'>
+            className='fixed z-40 left-0 right-0 bottom-0 top-0 bg-main-black bg-opacity-20'>
 
             <motion.div
                 animate={{

@@ -9,7 +9,7 @@ type Props = {
     className?: string
 }
 
-export default function Progress({ value, maxValue = 100, animationDuration = 1, animationDelay = 0, className = '' }: Props) {
+export default function Progress({ value, maxValue = 100, animationDuration, animationDelay, className = '' }: Props) {
 
     return (
         <div className='flex items-center gap-x-1'>
@@ -25,7 +25,8 @@ export default function Progress({ value, maxValue = 100, animationDuration = 1,
                         right: value && maxValue ? `${100 - Math.round((value / maxValue) * 100)}%` : '100%',
                         transition: {
                             duration: animationDuration,
-                            delay: animationDelay
+                            delay: animationDelay,
+                            ease: 'backOut'
                         }
                     }
                     }

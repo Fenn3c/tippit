@@ -11,14 +11,18 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from 'yup'
 import axiosInstance from "../utils/axios";
+import { formatMoney } from "@/utils/formatMoney";
+import MoneyInput from "@/components/MoneyInput";
 
 
 const createTipLinkSchema = Yup.object().shape({
     name: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     pageText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     thankText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
-    minAmount: Yup.number().required('Обязательное поле').typeError('Минимальная сумма должна быть числом').max(3000),
-    maxAmount: Yup.number().required('Обязательное поле').typeError('Максимальная сумма должна быть числом').min(50),
+    minAmount: Yup.number().required('Укажите сумму').min(5000, `Минимальная сумма ${formatMoney(5000)}`)
+        .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
+    maxAmount: Yup.number().required('Укажите сумму').max(5000, `Минимальная сумма ${formatMoney(5000)}`)
+        .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
 
     banner: Yup.mixed().test(
         'fileFormat',
@@ -42,8 +46,8 @@ export default function CreateTipLink() {
         banner: null,
         pageText: 'Оставьте чаевые',
         thankText: 'Спасибо!',
-        minAmount: '50',
-        maxAmount: '3000'
+        minAmount: 5000,
+        maxAmount: 300000
     }
 
     const formik = useFormik(
@@ -54,8 +58,8 @@ export default function CreateTipLink() {
                 formData.append('name', values.name)
                 formData.append('pageText', values.pageText)
                 formData.append('thankText', values.thankText)
-                formData.append('minAmount', `${Number(values.minAmount) * 100}`)
-                formData.append('maxAmount', `${Number(values.maxAmount) * 100}`)
+                formData.append('minAmount', values.minAmount.toString())
+                formData.append('maxAmount', values.maxAmount.toString())
                 if (values.banner) formData.append('banner', values.banner)
                 axiosInstance.post('/api/tip-links', formData).then(res => {
                     setStep(4)
@@ -74,7 +78,7 @@ export default function CreateTipLink() {
         setStep(step - 1)
     }
     const handleExit = () => {
-       router.push('/')
+        router.push('/')
     }
     const handleBanner = async (file: File) => {
         await formik.setFieldTouched('banner')
@@ -150,21 +154,21 @@ export default function CreateTipLink() {
 
                 {step === 3 && (
                     <div className="flex flex-col gap-y-8">
-                        <Input label="Минимальная сумма чаевых" placeholder="Минимальная сумма чаевых" type="text" required
+                        <MoneyInput label="Минимальная сумма чаевых" placeholder="Минимальная сумма чаевых" required
                             onFocus={e => formik.setFieldTouched('minAmount')}
-                            onChange={e =>
-                                formik.setFieldValue('minAmount', e.target.value)}
+                            onChange={value =>
+                                formik.setFieldValue('minAmount', value)}
                             error={formik.errors?.minAmount}
-                            value={formik.values.minAmount}
+                            initialValue={formik.values.minAmount}
                             touched={formik.touched.minAmount}
                         />
 
-                        <Input label="Максимальная сумма чаевых" placeholder="Максимальная сумма чаевых" type="text" required
-                            onFocus={e => formik.setFieldTouched('minAmount')}
-                            onChange={e =>
-                                formik.setFieldValue('maxAmount', e.target.value)}
+                        <MoneyInput label="Максимальная сумма чаевых" placeholder="Максимальная сумма чаевых" required
+                            onFocus={e => formik.setFieldTouched('maxAmount')}
+                            onChange={value =>
+                                formik.setFieldValue('maxAmount', value)}
                             error={formik.errors?.maxAmount}
-                            value={formik.values.maxAmount}
+                            initialValue={formik.values.maxAmount}
                             touched={formik.touched.maxAmount}
                         />
 

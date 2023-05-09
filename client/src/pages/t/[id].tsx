@@ -7,12 +7,11 @@ import Switch from "@/components/Switch";
 import UserCard from "@/components/UserCard";
 import { useFormik } from "formik";
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { formatCommission } from "@/utils/formatCommission";
 import axiosInstance from "@/utils/axios";
 import * as Yup from 'yup'
 import { useRouter } from "next/router";
-
-const CURRENCY_SUFFICS = ' ₽'
+import { formatMoney } from "@/utils/formatMoney";
+import MoneyInput from "@/components/MoneyInput";
 
 type Props = {
     uuid: string
@@ -29,34 +28,29 @@ type Props = {
 }
 
 
-const clearAmountValue = (val: string): number => Number(val.replace(/\D/g, ''))
 
 export default function tipLink({ uuid, banner, pageText, thankText, minAmount, maxAmount, userName, userSurname, userPosition, userPfp, commissionPercent }: Props) {
     const router = useRouter()
-    const minAmountConverted = Math.round(+minAmount / 100)
-    const maxAmountConverted = Math.round(+maxAmount / 100)
     const tipPaySchema = Yup.object().shape({
         comment: Yup.string().min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
-        amount: Yup.string().required('Укажите сумму').test('min', `Сумма не должна быть меньше ${minAmountConverted} ₽`, (value) => {
-            return clearAmountValue(value) >= minAmountConverted
-        }).test('max', `Сумма не должна быть больше ${maxAmountConverted} ₽`, (value) => {
-            return clearAmountValue(value) <= maxAmountConverted
-        }),
+        amount: Yup.number().required('Укажите сумму').min(minAmount, `Минимальная сумма ${formatMoney(minAmount)}`)
+            .max(maxAmount, `Максимальная сумма ${formatMoney(maxAmount)}`),
         payOffCommission: Yup.boolean(),
         tipLinkUUID: Yup.string().required()
     })
     const formik = useFormik(
         {
             initialValues: {
-                amount: '',
+                amount: 0,
                 comment: '',
                 payOffCommision: true,
                 tipLinkUUID: uuid
             },
             onSubmit: values => {
-                const amountMinimalMonetaryUnits = clearAmountValue(values.amount) * 100
+                // const amountMinimalMonetaryUnits = clearAmountValue(values.amount) * 100
+
                 axiosInstance.post('/api/payments', {
-                    amount: amountMinimalMonetaryUnits,
+                    amount: values.amount,
                     comment: values.comment,
                     payOffCommission: values.payOffCommision,
                     tipLinkUUID: values.tipLinkUUID
@@ -70,24 +64,17 @@ export default function tipLink({ uuid, banner, pageText, thankText, minAmount, 
             validationSchema: tipPaySchema
         })
 
-    const calculatedCommision = formatCommission((clearAmountValue(formik.values.amount) ?? 0) / 100 * commissionPercent)
-    const handleTipAmount = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target) return
-        let cleanValue = clearAmountValue(e.target.value)
-        const value = cleanValue + CURRENCY_SUFFICS;
-        setTimeout(() => {
-            e.target.selectionEnd = e.target.selectionEnd = e.target.value.length - CURRENCY_SUFFICS.length
-        })
+    const calculatedCommision = formatMoney(formik.values.amount / 100 * commissionPercent)
+    const handleTipAmount = async (value: number) => {
         await formik.setFieldValue('amount', value)
     }
     const handlePayOffCommision = (e: React.ChangeEvent<HTMLInputElement>) => {
         formik.setFieldValue('payOffCommision', !formik.values.payOffCommision)
     }
     const handleAddButton = async (amount: number) => {
-        let cleanValue = clearAmountValue(formik.values.amount)
-        cleanValue += amount
-        const value = cleanValue + CURRENCY_SUFFICS;
-        await formik.setFieldValue('amount', value)
+        const newAmount = formik.values.amount + amount
+        await formik.setFieldValue('amount', newAmount)
+        await formik.setFieldTouched('amount')
     }
 
     return (
@@ -113,24 +100,23 @@ export default function tipLink({ uuid, banner, pageText, thankText, minAmount, 
                         after:from-main-white">
                             <div className="overflow-x-scroll hide-scrollbar">
                                 <div className="flex gap-x-2">
-                                    <RoundButton text="+50 ₽" onClick={() => handleAddButton(50)} />
-                                    <RoundButton text="+100 ₽" onClick={() => handleAddButton(100)} />
-                                    <RoundButton text="+200 ₽" onClick={() => handleAddButton(200)} />
-                                    <RoundButton text="+300 ₽" onClick={() => handleAddButton(300)} />
-                                    <RoundButton text="+400 ₽" onClick={() => handleAddButton(400)} />
-                                    <RoundButton text="+500 ₽" onClick={() => handleAddButton(500)} />
-                                    <RoundButton text="+1000 ₽" onClick={() => handleAddButton(1000)} />
+                                    <RoundButton text={`+${formatMoney(5000)}`} onClick={() => handleAddButton(5000)} />
+                                    <RoundButton text={`+${formatMoney(10000)}`} onClick={() => handleAddButton(10000)} />
+                                    <RoundButton text={`+${formatMoney(20000)}`} onClick={() => handleAddButton(20000)} />
+                                    <RoundButton text={`+${formatMoney(30000)}`} onClick={() => handleAddButton(30000)} />
+                                    <RoundButton text={`+${formatMoney(40000)}`} onClick={() => handleAddButton(40000)} />
+                                    <RoundButton text={`+${formatMoney(50000)}`} onClick={() => handleAddButton(50000)} />
+                                    <RoundButton text={`+${formatMoney(60000)}`} onClick={() => handleAddButton(100000)} />
                                 </div>
                             </div>
                         </div>
 
-                        <Input label="Сумма чаевых" placeholder="Сумма чаевых" bottomLabel={`От ${minAmountConverted} до ${maxAmountConverted}`} required
+                        <MoneyInput label="Сумма чаевых" placeholder="Сумма чаевых" bottomLabel={`От ${formatMoney(minAmount)} до ${formatMoney(maxAmount)}`} required
                             onFocus={e => formik.setFieldTouched('amount')}
                             onChange={handleTipAmount}
                             error={formik.errors?.amount}
-                            value={formik.values.amount}
+                            initialValue={formik.values.amount}
                             touched={formik.touched.amount}
-                            numberic
                         />
                         <Input label="Комментарий" placeholder="Комментарий"
                             onFocus={e => formik.setFieldTouched('comment')}
@@ -140,7 +126,7 @@ export default function tipLink({ uuid, banner, pageText, thankText, minAmount, 
                             value={formik.values.comment}
                             touched={formik.touched.comment}
                         />
-                        <Switch text={`Погасить коммисию (${calculatedCommision} ₽)`} checked={formik.values.payOffCommision}
+                        <Switch text={`Погасить коммисию (${calculatedCommision})`} checked={formik.values.payOffCommision}
                             onChange={handlePayOffCommision} />
                         <Button onClick={() => formik.handleSubmit()} text="Перейти к оплате" disabled={!formik.isValid} />
                     </div>

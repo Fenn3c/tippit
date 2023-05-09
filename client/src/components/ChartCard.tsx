@@ -19,7 +19,7 @@ type Props = {
 
 export default function ChartCard({ title, data, color = '#3D96FF', animationDuration = 1, animationDelay = 0 }: Props) {
     const price = useAnimatedCounter(data.price, 0, animationDuration, animationDelay)
-    const percent = useAnimatedCounter(Math.abs(data.percent), 0, animationDuration, animationDelay)
+    const percent = useAnimatedCounter(data.percent, 0, animationDuration, animationDelay)
     const chartRef = useRef<any>(null)
     const [chartData, setChartData] = useState<ChartData<'line'>>({
         datasets: [],

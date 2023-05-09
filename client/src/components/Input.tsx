@@ -1,7 +1,7 @@
 import React from 'react'
 import InputMask from 'react-input-mask'
 
-type Props = {
+export type InputProps = {
     value?: string,
     label?: string,
     bottomLabel?: string,
@@ -17,7 +17,7 @@ type Props = {
 }
 
 export default function Input({ value = '', label = '', bottomLabel = '', placeholder = '',
-    required = false, type = "text", error, touched = false, mask, numberic = false, onChange, onFocus }: Props) {
+    required = false, type = "text", error, touched = false, mask, numberic = false, onChange, onFocus }: InputProps) {
 
 
     const inputStyles = `bg-gray-bg border border-gray-stroke rounded-xl py-3 px-4 font-medium

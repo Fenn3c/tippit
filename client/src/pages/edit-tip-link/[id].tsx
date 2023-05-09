@@ -12,6 +12,8 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import axiosInstance from "../../utils/axios";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import MoneyInput from "@/components/MoneyInput";
+import { formatMoney } from "@/utils/formatMoney";
 
 type Props = {
     uuid: string,
@@ -28,8 +30,10 @@ const editTipLinkSchema = Yup.object().shape({
     name: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     pageText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     thankText: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
-    minAmount: Yup.number().required('Обязательное поле').typeError('Минимальная сумма должна быть числом').max(3000),
-    maxAmount: Yup.number().required('Обязательное поле').typeError('Максимальная сумма должна быть числом').min(50),
+    minAmount: Yup.number().required('Укажите сумму').min(5000, `Минимальная сумма ${formatMoney(5000)}`)
+        .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
+    maxAmount: Yup.number().required('Укажите сумму').max(5000, `Минимальная сумма ${formatMoney(5000)}`)
+        .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
 
     banner: Yup.mixed().test(
         'fileFormat',
@@ -53,8 +57,8 @@ export default function EditTipLink({ uuid, name, banner, pageText, thankText, m
         banner: null,
         pageText: pageText,
         thankText: thankText,
-        minAmount: Math.round(minAmount / 100).toString(),
-        maxAmount: Math.round(maxAmount / 100).toString()
+        minAmount: minAmount,
+        maxAmount: maxAmount
     }
 
     const formik = useFormik(
@@ -66,8 +70,8 @@ export default function EditTipLink({ uuid, name, banner, pageText, thankText, m
                 if (touchedFields.name) formData.append('name', values.name)
                 if (touchedFields.pageText) formData.append('pageText', values.pageText)
                 if (touchedFields.thankText) formData.append('thankText', values.thankText)
-                if (touchedFields.minAmount) formData.append('minAmount', `${Number(values.minAmount) * 100}`)
-                if (touchedFields.maxAmount) formData.append('maxAmount', `${Number(values.maxAmount) * 100}`)
+                if (touchedFields.minAmount) formData.append('minAmount', values.minAmount.toString())
+                if (touchedFields.maxAmount) formData.append('maxAmount', values.maxAmount.toString())
                 if (touchedFields.banner && values.banner) formData.append('banner', values.banner)
 
                 axiosInstance.patch(`/api/tip-links/${uuid}`, formData).then(res => {
@@ -164,21 +168,21 @@ export default function EditTipLink({ uuid, name, banner, pageText, thankText, m
 
                 {step === 3 && (
                     <div className="flex flex-col gap-y-8">
-                        <Input label="Минимальная сумма чаевых" placeholder="Минимальная сумма чаевых" type="text" required
+                        <MoneyInput label="Минимальная сумма чаевых" placeholder="Минимальная сумма чаевых" required
                             onFocus={e => formik.setFieldTouched('minAmount')}
-                            onChange={e =>
-                                formik.setFieldValue('minAmount', e.target.value)}
+                            onChange={value =>
+                                formik.setFieldValue('minAmount', value)}
                             error={formik.errors?.minAmount}
-                            value={formik.values.minAmount}
+                            initialValue={formik.values.minAmount}
                             touched={formik.touched.minAmount}
                         />
 
-                        <Input label="Максимальная сумма чаевых" placeholder="Максимальная сумма чаевых" type="text" required
-                            onFocus={e => formik.setFieldTouched('minAmount')}
-                            onChange={e =>
-                                formik.setFieldValue('maxAmount', e.target.value)}
+                        <MoneyInput label="Максимальная сумма чаевых" placeholder="Максимальная сумма чаевых" required
+                            onFocus={e => formik.setFieldTouched('maxAmount')}
+                            onChange={value =>
+                                formik.setFieldValue('maxAmount', value)}
                             error={formik.errors?.maxAmount}
-                            value={formik.values.maxAmount}
+                            initialValue={formik.values.maxAmount}
                             touched={formik.touched.maxAmount}
                         />
 
@@ -191,7 +195,7 @@ export default function EditTipLink({ uuid, name, banner, pageText, thankText, m
                     <div className="flex flex-col gap-y-8 items-center text-center ">
                         <CompleteIcon />
                         <div>
-                            <p className="font-bold text-2xl mb-2">Ссылка создана!</p>
+                            <p className="font-bold text-2xl mb-2">Ссылка изменена!</p>
                             <p className="text-center text-gray-text">Теперь вы можете принимать чаевые</p>
                         </div>
                         <Link href="/">

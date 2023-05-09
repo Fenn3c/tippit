@@ -96,11 +96,12 @@ export class PaymentsService {
     const user = await this.usersService.getUserById(userId)
     if (!user) throw new BadRequestException('Пользователь не найден')
     const periodDates = this.getPeriodDates(period)
+    const betweenDates = periodDates ? Between(periodDates.startDate, periodDates.endDate) : undefined
     const operations = await this.paymentRepository.find({
       where: {
         receiver: user,
         paid: true,
-        pay_date: periodDates ? Between(periodDates.startDate, periodDates.endDate) : undefined
+        pay_date: betweenDates
       },
       order: {
         pay_date: 'ASC'
@@ -111,10 +112,10 @@ export class PaymentsService {
     })
     const dates = operationsMapped.map(operation => operation.date)
     const values = operationsMapped.map(operation => operation.value)
-    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true }))
-    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true }))
-    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true })
-    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true })
+    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true, pay_date: betweenDates }))
+    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true, pay_date: betweenDates }))
+    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true, pay_date: betweenDates })
+    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true, pay_date: betweenDates })
     const percent = this.calculatePercentageIncrease(values)
     return {
       period, total, avg, min, max,

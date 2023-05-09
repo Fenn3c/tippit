@@ -40,10 +40,10 @@ export class Payment {
     @Column({ nullable: false })
     payment_id: string
 
-    @ManyToOne(() => User, (user) => user.tipLinks)
+    @ManyToOne(() => User, (user) => user.tipLinks, {onDelete: 'SET NULL'})
     receiver: User
 
-    @ManyToOne(() => TipLink, (tipLink) => tipLink.payments)
+    @ManyToOne(() => TipLink, (tipLink) => tipLink.payments, {onDelete: 'SET NULL'})
     tip_link: TipLink
 
 }

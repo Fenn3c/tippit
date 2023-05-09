@@ -10,6 +10,8 @@ import * as Yup from 'yup'
 import { formatPhoneNumber } from '@/utils/formatPhoneNumber'
 import { useRouter } from 'next/router';
 import axiosInstance from "../utils/axios";
+import Link from "next/link";
+import CompleteIcon from "@/components/CompleteIcon";
 
 
 const signupSchema = Yup.object().shape({
@@ -17,7 +19,7 @@ const signupSchema = Yup.object().shape({
     password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа'),
 })
 export default function SignIn() {
-    const [step, setStep] = useState<1 | 2>(1)
+    const [step, setStep] = useState<1 | 2 | 3>(1)
     const [error, setError] = useState<string | null>(null)
     const [verificationId, setVerificationId] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
@@ -55,17 +57,17 @@ export default function SignIn() {
         await axiosInstance.post('/api/sms/verify', {
             'verificationId': verificationId,
             'code': code
-        }).then((res) => {
+        }).then(async (res) => {
             console.log(res)
-            axiosInstance.post('/api/auth/signin', {
+            await axiosInstance.post('/api/auth/signin', {
                 phone: loginFormik.values.phone,
                 password: loginFormik.values.password,
                 phoneVerificationId: verificationId,
                 phoneVerify: res.data.accessCode
             }).then(res => {
+                setStep(3)
                 router.push('/')
                 localStorage.setItem('token', res.data.token);
-                // alert(res.data.token)
 
             }).catch(err => {
                 console.error(err)
@@ -102,6 +104,13 @@ export default function SignIn() {
                         />
                         <Button text='Войти' onClick={handleLogin}
                             disabled={Boolean(loginFormik.errors.phone?.length) || !loginFormik.touched.phone || loading} />
+                        <div className="flex justify-center">
+                            <Link href="/signup">
+                                <TextButton text="Создать аккаунт" />
+                            </Link>
+                        </div>
+
+
                     </div>)}
                 {step === 2 && (
                     <div className="flex flex-col gap-y-8">
@@ -111,6 +120,13 @@ export default function SignIn() {
 
                         {/* <TextButton text="Отправить повторно" /> */}
                     </div>)}
+                {step === 3 && (
+                    <div className="flex flex-col justify-center items-center gap-y-3">
+                        <CompleteIcon />
+                        <p className="font-bold text-2xl mb-2">Добро пожаловать!</p>
+                    </div>
+
+                )}
 
 
 

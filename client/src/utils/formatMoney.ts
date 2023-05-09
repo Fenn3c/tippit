@@ -1,3 +1,5 @@
+export const CURRENCY_SUFFICS = ' ₽'
+
 export const formatMoney = (money: number): string => {
     const amountInRubles = money / 100;
     return amountInRubles.toLocaleString('ru-RU', {

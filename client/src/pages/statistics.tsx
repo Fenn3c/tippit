@@ -30,70 +30,69 @@ type Props = {
 export default function Statistics({ period, total, avg, min, max, payments }: Props) {
     const router = useRouter()
     return (
-        <>
-            <Layout title="Статистика" smallTitleMargin>
-                <DropMenu
-                    initialId={period}
-                    options={{
-                        total: {
-                            name: 'За всё время',
-                            onSelect() {
-                                router.push({
-                                    query: { period: 'total' }
-                                })
-                            },
+
+        <Layout title="Статистика" smallTitleMargin>
+            <DropMenu
+                initialId={period}
+                options={{
+                    total: {
+                        name: 'За всё время',
+                        onSelect() {
+                            router.push({
+                                query: { period: 'total' }
+                            })
                         },
-                        week: {
-                            name: 'За неделю',
-                            onSelect() {
-                                router.push({
-                                    query: { period: 'week' }
-                                })
-                            },
+                    },
+                    week: {
+                        name: 'За неделю',
+                        onSelect() {
+                            router.push({
+                                query: { period: 'week' }
+                            })
                         },
-                        month: {
-                            name: 'За месяц',
-                            onSelect() {
-                                router.push({
-                                    query: { period: 'month' }
-                                })
-                            },
+                    },
+                    month: {
+                        name: 'За месяц',
+                        onSelect() {
+                            router.push({
+                                query: { period: 'month' }
+                            })
                         },
-                        year: {
-                            name: 'За год',
-                            onSelect() {
-                                router.push({
-                                    query: { period: 'year' }
-                                })
-                            },
-                        }
+                    },
+                    year: {
+                        name: 'За год',
+                        onSelect() {
+                            router.push({
+                                query: { period: 'year' }
+                            })
+                        },
+                    }
+                }
+                } />
+            <div className="grid grid-cols-2 gap-4 mt-8">
+                <ChartCard
+                    title='Заработано'
+                    color='#3D96FF'
+                    data={{
+                        price: total,
+                        percent: payments.percent,
+                        x: payments.dates,
+                        y: payments.values, // Все чаевые за неделю например
                     }
                     } />
-                <div className="grid grid-cols-2 gap-4 mt-12">
-                    <ChartCard
-                        key={0}
-                        title='Заработано'
-                        color='#3D96FF'
-                        data={{
-                            price: total,
-                            percent: payments.percent,
-                            x: payments.dates,
-                            y: payments.values, // Все чаевые за неделю например
-                        }
-                        } />
-                    <StatisticsBigNumberCard title='В среднем' money={avg} />
-                    <StatisticsBigNumberCard title='Максимальное' money={max} />
-                    <StatisticsBigNumberCard title='Минимальное' money={min} />
+                <StatisticsBigNumberCard title='В среднем' money={avg} />
+                <StatisticsBigNumberCard title='Максимальное' money={max} />
+                <StatisticsBigNumberCard title='Минимальное' money={min} />
 
-                </div>
-            </Layout>
-        </>
+            </div>
+        </Layout>
+
     )
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
-        const res = await axiosInstance.get(`/payments/statistcs/${ctx.query.period}`, {
+        const res = await axiosInstance.get(`/payments/statistcs/${ctx.query.period ? ctx.query.period : 'total'}`, {
             headers: ctx.req.headers
         })
         return {
