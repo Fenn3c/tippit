@@ -1,6 +1,7 @@
 import { User } from "src/users/users.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Organization } from "./organization.entity";
+import { TipLink } from "src/tip-links/entities/tip-link.entity";
 
 @Entity({ name: 'employees' })
 export class Employee {
@@ -10,7 +11,7 @@ export class Employee {
     @Column({ unique: true })
     uuid: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     position: string
 
     @ManyToOne(() => User, (user) => user.employees)
@@ -19,7 +20,10 @@ export class Employee {
     @ManyToOne(() => Organization, (organization) => organization.employees)
     organization: Organization
 
-    // staff: any
+    @OneToOne(type => TipLink, { cascade: true, eager: true })
+    @JoinColumn()
+    tipLink: TipLink
 
-
+    // @OneToMany(() => TipLink, (tipLink) => tipLink.employee)
+    // tipLinks: TipLink[]
 }

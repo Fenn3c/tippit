@@ -6,11 +6,12 @@ type Props = {
     pfp?: string | null,
     fullname: string,
     position?: string
+    className?: string
 }
 
-export default function UserCard({ fullname, pfp, position }: Props) {
+export default function UserCard({ fullname, pfp, position, className }: Props) {
     return (
-        <Card>
+        <Card className={className}>
             <div className='flex gap-x-4 items-center'>
                 {pfp ?
                     <img className='bg-gray-text w-16 h-16 rounded-3xl' src={`${process.env.NEXT_PUBLIC_STATIC_HOST}/${pfp}`} alt="" /> :

@@ -58,7 +58,7 @@ export class TipLinksService {
   findAllByUser(userId: number) {
     const user = new User()
     user.id = userId
-    return this.tipLinksRepository.findBy({ user })
+    return this.tipLinksRepository.find({ where: { user }, relations: [] })
   }
 
   async findOne(id: number) {

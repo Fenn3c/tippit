@@ -27,7 +27,7 @@ export class TipLinkData {
     @Column()
     max_amount: number
 
-    @OneToMany(() => TipLink, (tipLinks) => tipLinks.tipLinkData)
+    @OneToMany(() => TipLink, (tipLinks) => tipLinks.tipLinkData, { nullable: true })
     tipLinks: TipLink[]
 
     @OneToOne(() => Organization, organization => organization.tipLinkData, { onDelete: 'CASCADE' })

@@ -14,6 +14,9 @@ const DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN
 type TipLink = {
   name: string
   uuid: string
+  organization: {
+    name: string
+  } | null
 }
 
 type Props = {
@@ -43,11 +46,11 @@ export default function Home({ tipLinks }: Props) {
           {tipLinks.map((tipLink, index) =>
             <QrCard
               link={`${DOMAIN_NAME}/t/${tipLink.uuid}`}
-              topLabel='Ссылка на страницу чаевых'
+              topLabel={tipLink.organization ? tipLink.organization.name : `Ссылка на страницу чаевых`}
               bottomLabel='Сканируйте код при помощи камеры или воспользуйтесь ссылкой для оплаты.'
               key={index}
               name={tipLink.name}
-              onMoreClick={() => { setTipModal(tipLink.uuid) }}
+              onMoreClick={tipLink.organization ? undefined : () => { setTipModal(tipLink.uuid) }}
             />
           )}
         </div>
