@@ -1,6 +1,6 @@
 import AddTipLinkButton from '@/components/AddTipLinkButton';
 import ModalButton from '@/components/ModalButton';
-import TipLink from '@/components/TipLink';
+import TipLink from '@/components/QrCard';
 import Layout from '@/components/layouts/Layout'
 import Modal from '@/components/layouts/Modal';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';

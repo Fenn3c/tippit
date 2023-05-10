@@ -1,26 +1,5 @@
 import { IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator"
+import { CreateTipLinkDto } from "./create-tip-link.dto";
+import { PartialType } from "@nestjs/mapped-types";
 
-export class UpdateTipLinkDto {
-    @IsString()
-    @IsNotEmpty()
-    @IsOptional()
-    name: string
-
-    @IsString()
-    @IsNotEmpty()
-    @IsOptional()
-    pageText: string
-
-    @IsString()
-    @IsNotEmpty()
-    @IsOptional()
-    thankText: string
-
-    @IsNumberString()
-    @IsOptional()
-    minAmount: string
-
-    @IsNumberString()
-    @IsOptional()
-    maxAmount: string
-}
+export class UpdateTipLinkDto extends PartialType(CreateTipLinkDto) {}

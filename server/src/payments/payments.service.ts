@@ -179,8 +179,8 @@ export class PaymentsService {
       amountToPay = createPaymentDto.amount
     }
     if (!amountToPay) throw new InternalServerErrorException('Ошибка обработки платежа')
-    if (payment.amount > tipLink.max_amount) throw new BadRequestException('Сумма больше максимально допустимой')
-    if (payment.amount < tipLink.min_amount) throw new BadRequestException('Сумма меньше минимально допустимой')
+    if (payment.amount > tipLink.tipLinkData.max_amount) throw new BadRequestException('Сумма больше максимально допустимой')
+    if (payment.amount < tipLink.tipLinkData.min_amount) throw new BadRequestException('Сумма меньше минимально допустимой')
     const yooKassaPayment = await this.createYookassaPayment(amountToPay, payment.uuid)
     payment.payment_id = yooKassaPayment.id
     payment.payment_link = yooKassaPayment.confirmation.confirmation_url

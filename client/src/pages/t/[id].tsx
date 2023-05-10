@@ -148,11 +148,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         return {
             props: {
                 uuid: res.data.uuid,
-                banner: res.data.banner,
-                pageText: res.data.page_text,
-                thankText: res.data.thank_text,
-                minAmount: res.data.min_amount,
-                maxAmount: res.data.max_amount,
+                banner: res.data.tipLinkData.banner,
+                pageText: res.data.tipLinkData.page_text,
+                thankText: res.data.tipLinkData.thank_text,
+                minAmount: res.data.tipLinkData.min_amount,
+                maxAmount: res.data.tipLinkData.max_amount,
                 userName: res.data.user.name,
                 userSurname: res.data.user.surname,
                 userPosition: res.data.user.position,

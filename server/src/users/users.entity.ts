@@ -1,4 +1,6 @@
 import { Exclude } from 'class-transformer';
+import { Employee } from 'src/organizations/entities/employee.entity';
+import { Organization } from 'src/organizations/entities/organization.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { TipLink } from 'src/tip-links/entities/tip-link.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
@@ -34,4 +36,10 @@ export class User {
 
     @OneToMany(() => Payment, (payment) => payment.receiver)
     payments: Payment[]
+
+    @OneToMany(() => Organization, (organization) => organization.owner)
+    organizations: Organization[]
+
+    @OneToMany(() => Employee, (employee) => employee.user)
+    employees: Employee[]
 }

@@ -42,8 +42,8 @@ export default function Layout({ children, title = '', onAddClick, cleanHeader =
                 <Link href="/profile">
                     <ModalButton text='Профиль' />
                 </Link>
-                <Link href="/org">
-                    <ModalButton text='Организация' />
+                <Link href="/organizations">
+                    <ModalButton text='Организации' />
                 </Link>
             </Modal>
         </>

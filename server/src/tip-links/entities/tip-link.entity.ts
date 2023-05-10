@@ -1,6 +1,7 @@
 import { Payment } from "src/payments/entities/payment.entity";
 import { User } from "src/users/users.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { TipLinkData } from "./tip-link-data.entity";
 
 @Entity({ name: 'tip_links' })
 export class TipLink {
@@ -10,23 +11,8 @@ export class TipLink {
     @Column({ unique: true })
     uuid: string
 
-    @Column()
-    name: string
-
-    @Column({ nullable: true })
-    banner: string
-
-    @Column({ default: 'Оставить чаевые' })
-    page_text: string
-
-    @Column({ default: 'Спасибо!' })
-    thank_text: string
-
-    @Column()
-    min_amount: number
-
-    @Column()
-    max_amount: number
+    @ManyToOne(() => TipLinkData, (tipLinkData) => tipLinkData.tipLinks, { eager: true })
+    tipLinkData: TipLinkData
 
     @ManyToOne(() => User, (user) => user.tipLinks)
     user: User

@@ -7,12 +7,13 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 import { FilesModule } from 'src/files/files.module';
+import { TipLinkData } from './entities/tip-link-data.entity';
 
 @Module({
   imports: [
     FilesModule,
     UsersModule,
-    TypeOrmModule.forFeature([TipLink]),
+    TypeOrmModule.forFeature([TipLink, TipLinkData]),
     AuthModule
   ],
   controllers: [TipLinksController],

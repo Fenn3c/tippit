@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from 'yup'
-import axiosInstance from "../../utils/axios";
+import axiosInstance from "../../../utils/axios";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import MoneyInput from "@/components/MoneyInput";
 import { formatMoney } from "@/utils/formatMoney";
@@ -218,12 +218,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         return {
             props: {
                 uuid: res.data.uuid,
-                name: res.data.name,
-                banner: res.data.banner,
-                pageText: res.data.page_text,
-                thankText: res.data.thank_text,
-                minAmount: res.data.min_amount,
-                maxAmount: res.data.max_amount
+                name: res.data.tipLinkData.name,
+                banner: res.data.tipLinkData.banner,
+                pageText: res.data.tipLinkData.page_text,
+                thankText: res.data.tipLinkData.thank_text,
+                minAmount: res.data.tipLinkData.min_amount,
+                maxAmount: res.data.tipLinkData.max_amount
             }
         }
     } catch (e) {

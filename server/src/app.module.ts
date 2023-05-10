@@ -15,6 +15,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { PaymentsModule } from './payments/payments.module';
 import * as path from 'path';
 import { Payment } from './payments/entities/payment.entity';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { Organization } from './organizations/entities/organization.entity';
+import { Employee } from './organizations/entities/employee.entity';
+import { TipLinkData } from './tip-links/entities/tip-link-data.entity';
 
 @Module({
   controllers: [AppController],
@@ -33,7 +37,7 @@ import { Payment } from './payments/entities/payment.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, PhoneVerification, TipLink, Payment],
+      entities: [User, PhoneVerification, TipLink, TipLinkData, Payment, Organization, Employee],
       synchronize: true, // delete in production
     }),
     UsersModule,
@@ -42,6 +46,7 @@ import { Payment } from './payments/entities/payment.entity';
     FilesModule,
     TipLinksModule,
     PaymentsModule,
+    OrganizationsModule,
   ]
 })
 export class AppModule { }

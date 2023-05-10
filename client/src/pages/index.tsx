@@ -1,6 +1,5 @@
 import AddTipLinkButton from '@/components/AddTipLinkButton';
 import ModalButton from '@/components/ModalButton';
-import TipLink from '@/components/TipLink';
 import Layout from '@/components/layouts/Layout'
 import Modal from '@/components/layouts/Modal';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
@@ -9,6 +8,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import axiosInstance from '../utils/axios';
+import QrCard from '@/components/QrCard';
+const DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN
 
 type TipLink = {
   name: string
@@ -32,7 +33,7 @@ export default function Home({ tipLinks }: Props) {
     router.replace(router.asPath);
   }
   const handleAdd = () => {
-    router.push('/create-tip-link')
+    router.push('/tip-links/create')
   }
 
   return (
@@ -40,8 +41,10 @@ export default function Home({ tipLinks }: Props) {
       <Layout title="QR и ссылки" onAddClick={handleAdd}>
         <div className="flex flex-col gap-y-8 mb-8">
           {tipLinks.map((tipLink, index) =>
-            <TipLink
-              uuid={tipLink.uuid}
+            <QrCard
+              link={`${DOMAIN_NAME}/t/${tipLink.uuid}`}
+              topLabel='Ссылка на страницу чаевых'
+              bottomLabel='Сканируйте код при помощи камеры или воспользуйтесь ссылкой для оплаты.'
               key={index}
               name={tipLink.name}
               onMoreClick={() => { setTipModal(tipLink.uuid) }}
@@ -52,7 +55,7 @@ export default function Home({ tipLinks }: Props) {
 
       </Layout>
       <Modal open={Boolean(tipModal)} onClose={() => setTipModal(null)}>
-        <Link href={`/edit-tip-link/${tipModal}`}>
+        <Link href={`/tip-links/edit/${tipModal}`}>
           <ModalButton text='Редактировать Ссылку' />
         </Link>
 

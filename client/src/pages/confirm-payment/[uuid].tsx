@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         })
         return {
             props: {
-                thankText: res.data.tip_link.thank_text
+                thankText: res.data.tip_link.tipLinkData.thank_text
             }
         }
     } catch (e) {
