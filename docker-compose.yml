@@ -1,0 +1,61 @@
+version: '3.0'
+
+services:
+  server:
+    container_name: server
+    build:
+      context: ./server
+      # Only will build development stage from our dockerfile
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    env_file:
+      - ./server/.development.env
+      # Run a command against the development stage of the image
+    ports:
+      - 3001:3001
+      - 9229:9229
+    command: npm run start:dev
+    restart: always
+    depends_on:
+      - postgres
+  client:
+    container_name: client
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    env_file:
+      - ./client/.env.local
+    ports:
+      - 3000:3000
+    command: npm run dev
+    restart: always
+    depends_on:
+      - server
+  postgres:
+    container_name: postgres
+    image: postgres:12
+    env_file:
+      - /server/.development.env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    restart: always
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin/data
