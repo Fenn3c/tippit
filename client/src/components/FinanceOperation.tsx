@@ -15,9 +15,9 @@ export default function FinanceOperation({ name, comment, amount }: Props) {
                 <p>{name}</p>
                 {comment && <p className="text-gray-text font-normal">{comment}</p>}
             </div>
-            <p className="text-done">
-                {amount > 0 ? `+${formatMoney(amount)}` : `-${formatMoney(amount)}`}
+            <p className={amount > 0 ? 'text-done' : 'text-main-black'}>
+                {amount > 0 ? `+ ${formatMoney(amount)}` : `${formatMoney(amount)}`}
             </p>
-        </Card>
+        </Card >
     )
 }

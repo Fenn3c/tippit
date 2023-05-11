@@ -23,105 +23,8 @@ export class PaymentsService {
     return Math.ceil(amount / 100 * percent)
   }
 
-  public async getOperations(userId: number) {
-    const user = await this.usersService.getUserById(userId)
-    if (!user) throw new BadRequestException('Пользователь не найден')
-    const operations = await this.paymentRepository.find({
-      where: {
-        receiver: user,
-        paid: true
-      },
-      order: {
-        pay_date: 'DESC'
-      }
-    })
-    const operationsMapped = operations.map(operation => {
-      return {
-        type: 'tip',
-        date: operation.pay_date,
-        amount: operation.amount,
-        comment: operation.comment,
-      }
-    }
-    )
-    return {
-      balance: user.balance,
-      operations: operationsMapped
-    }
-  }
-  private getPeriodDates(period: StatisticsPeriod) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const day = today.getDate();
-    const startOfWeek = new Date(year, month, day - today.getDay());
-    const startOfMonth = new Date(year, month, 1);
-    const startOfYear = new Date(year, 0, 1);
-    switch (period) {
-      case StatisticsPeriod.Year:
-        return {
-          startDate: startOfYear,
-          endDate: new Date(year, 11, 31),
-        }
-      case StatisticsPeriod.Month:
-        return {
-          startDate: startOfMonth,
-          endDate: new Date(year, month + 1, 0),
-        }
-      case StatisticsPeriod.Week:
-        return {
-          startDate: startOfWeek,
-          endDate: new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000),
-        }
-      case StatisticsPeriod.Total:
-        return undefined
-      default:
-        throw new BadRequestException('Указан неверный период')
-    }
-  }
 
-  private calculatePercentageIncrease(arr: number[]): number {
-    if (arr.length < 2) {
-      return 0;
-    }
-
-    const lastElement = arr[arr.length - 1];
-    const previousElement = arr[arr.length - 2];
-
-    return Number((((lastElement - previousElement) / previousElement) * 100).toFixed(2));
-  }
-
-
-  public async getStatistics(userId: number, period: StatisticsPeriod) {
-    const user = await this.usersService.getUserById(userId)
-    if (!user) throw new BadRequestException('Пользователь не найден')
-    const periodDates = this.getPeriodDates(period)
-    const betweenDates = periodDates ? Between(periodDates.startDate, periodDates.endDate) : undefined
-    const operations = await this.paymentRepository.find({
-      where: {
-        receiver: user,
-        paid: true,
-        pay_date: betweenDates
-      },
-      order: {
-        pay_date: 'ASC'
-      }
-    })
-    const operationsMapped = operations.map(operation => {
-      return { date: operation.pay_date, value: operation.amount }
-    })
-    const dates = operationsMapped.map(operation => operation.date)
-    const values = operationsMapped.map(operation => operation.value)
-    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true, pay_date: betweenDates })) ?? 0
-    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true, pay_date: betweenDates })) ?? 0
-    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true, pay_date: betweenDates }) ?? 0
-    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true, pay_date: betweenDates }) ?? 0
-    const percent = this.calculatePercentageIncrease(values)
-    return {
-      period, total, avg, min, max,
-      payments: { percent, dates, values }
-    }
-  }
+  
 
   private async createYookassaPayment(amount: number, paymentUUID: string): Promise<{
     id: string,
@@ -129,8 +32,8 @@ export class PaymentsService {
       confirmation_url: string
     }
   }> {
-    const amountRUB = Number((amount / 100).toFixed(2))
-    if (isNaN(amountRUB)) throw new InternalServerErrorException('Ошибка обработки суммы')
+    const amountRUB = (amount / 100).toFixed(2)
+    if (isNaN(Number(amountRUB))) throw new InternalServerErrorException('Ошибка обработки суммы')
     try {
       const res = await axios.post(`${YOOKASSA_API}/payments`, {
         amount: {

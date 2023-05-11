@@ -8,7 +8,7 @@ import { SmsModule } from 'src/sms/sms.module';
 @Module({
   imports: [
     forwardRef(() => UsersModule),
-    SmsModule,
+    forwardRef(() => SmsModule),
     JwtModule.register({
       secret: process.env.JWT_PRIVATE_KEY || 'SECRET',
       signOptions: {

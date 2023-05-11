@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PhoneVerification } from './phoneVerifications.entity';
 import { Repository } from 'typeorm';
@@ -6,13 +6,21 @@ import * as bcrypt from 'bcrypt';
 import { v4 } from 'uuid'
 import { VerifySmsDto } from './dto/verifySMS.dto';
 import { VerifyPhoneDto } from './dto/verifyPhone.dto';
+import { UsersService } from 'src/users/users.service';
 
 
 @Injectable()
 export class SmsService {
 
-    constructor(@InjectRepository(PhoneVerification) private phoneVerificationRepository: Repository<PhoneVerification>) { }
+    constructor(@InjectRepository(PhoneVerification) private phoneVerificationRepository: Repository<PhoneVerification>,
+        private readonly usersService: UsersService) { }
 
+    async sendMeSMS(userId: number) {
+        const user = await this.usersService.getUserById(userId)
+        if (!user) throw new NotFoundException('Пользовать не найден')
+        return await this.sendSMS(user.phone)
+
+    }
     async sendSMS(phone: string) {
         const code = Math.floor(10000 + Math.random() * 90000).toString()
         const phoneVerification = new PhoneVerification()

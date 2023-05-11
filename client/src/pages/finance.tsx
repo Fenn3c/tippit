@@ -7,6 +7,7 @@ import FinanceOperation from '@/components/FinanceOperation';
 import { capitalize } from '@/utils/capitalize';
 import { formatMoney } from '@/utils/formatMoney';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
+import Link from 'next/link';
 
 const operationsByMonth = (operations: Operation[]) => {
     const reducedOperations = operations.reduce((acc: any, operation) => {
@@ -46,14 +47,17 @@ export default function Finance({ balance, operations }: Props) {
         <>
             <Layout title="Баланс" smallTitleMargin>
                 <p className="font-bold text-3xl mb-8">{formatMoney(animatedBalance)}</p>
-                <Button text="Вывести на карту" className="mb-8" />
+                <Link href='/payout'>
+                    <Button text="Вывести на карту" className="mb-8" />
+                </Link>
                 <h2 className='text-2xl font-bold mb-6'>История операций</h2>
                 {operations.map(({ month, operations }, index) =>
                     <div className="mb-6" key={index}>
                         <p className="font-bold text-base text-gray-text mb-3">{month}</p>
                         <div className='flex flex-col gap-y-4'>
                             {operations.map((operation, index) =>
-                                <FinanceOperation key={index} name='Чаевые' amount={operation.amount} comment={operation.comment} />
+                                <FinanceOperation key={index} name={operation.type === 'tip' ? 'Чаевые' : 'Выводы'}
+                                    amount={operation.type === 'payout' ? -operation.amount : operation.amount} comment={operation.comment} />
                             )}
                         </div>
                     </div>
@@ -65,7 +69,7 @@ export default function Finance({ balance, operations }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
-        const res = await axiosInstance.get('/payments/operations', {
+        const res = await axiosInstance.get('/finance/operations', {
             headers: ctx.req.headers
         })
         return {

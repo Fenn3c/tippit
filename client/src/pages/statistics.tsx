@@ -92,7 +92,7 @@ export default function Statistics({ period, total, avg, min, max, payments }: P
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
-        const res = await axiosInstance.get(`/payments/statistcs/${ctx.query.period ? ctx.query.period : 'total'}`, {
+        const res = await axiosInstance.get(`/finance/statistics/${ctx.query.period ? ctx.query.period : 'total'}`, {
             headers: ctx.req.headers
         })
         return {

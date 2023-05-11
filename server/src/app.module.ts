@@ -19,6 +19,9 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { Organization } from './organizations/entities/organization.entity';
 import { Employee } from './organizations/entities/employee.entity';
 import { TipLinkData } from './tip-links/entities/tip-link-data.entity';
+import { PayoutsModule } from './payouts/payouts.module';
+import { Payout } from './payouts/entities/payout.entity';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
   controllers: [AppController],
@@ -37,7 +40,7 @@ import { TipLinkData } from './tip-links/entities/tip-link-data.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, PhoneVerification, TipLink, TipLinkData, Payment, Organization, Employee],
+      entities: [User, PhoneVerification, TipLink, TipLinkData, Payment, Organization, Employee, Payout],
       synchronize: true, // delete in production
     }),
     UsersModule,
@@ -47,6 +50,8 @@ import { TipLinkData } from './tip-links/entities/tip-link-data.entity';
     TipLinksModule,
     PaymentsModule,
     OrganizationsModule,
+    PayoutsModule,
+    FinanceModule,
   ]
 })
 export class AppModule { }

@@ -6,16 +6,18 @@ import { formatMoney, CURRENCY_SUFFICS } from '@/utils/formatMoney'
 
 type MoneyInputProps = Omit<InputProps, 'mask' | 'type' | 'numberic' | 'value' | 'onChange'> & {
     onChange?: (value: number) => void,
-    initialValue: number
+    maxValue?: number
+    initialValue?: number
 }
 
 const clearAmountValue = (val: string): number => Number(val.replace(/\D/g, ''))
 
-export default function MoneyInput({ onChange, initialValue, ...InputProps }: MoneyInputProps) {
+export default function MoneyInput({ onChange, initialValue, maxValue, ...InputProps }: MoneyInputProps) {
     useEffect(() => {
         setDirtyValue(initialValue ? formatMoney(initialValue) : '')
     }, [initialValue])
     const [dirtyValue, setDirtyValue] = useState(initialValue ? formatMoney(initialValue) : '')
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target) return
@@ -28,12 +30,23 @@ export default function MoneyInput({ onChange, initialValue, ...InputProps }: Mo
         setDirtyValue(value)
         if (onChange) onChange(cleanValue * 100)
     }
+
+    const handleMax = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!e.target) return
+        if (!maxValue) return
+        const value = formatMoney(maxValue);
+        setDirtyValue(value)
+        if (onChange) onChange(maxValue)
+    }
+
     return (
         <Input
             onChange={handleChange}
             type='text'
             value={dirtyValue}
             numberic
+            innerButtonText={maxValue ? 'Макс' : undefined}
+            onInnerButtonClick={handleMax}
             {...InputProps}
         />
     )
