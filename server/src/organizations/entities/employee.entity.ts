@@ -17,13 +17,11 @@ export class Employee {
     @ManyToOne(() => User, (user) => user.employees)
     user: User
 
-    @ManyToOne(() => Organization, (organization) => organization.employees)
+    @ManyToOne(() => Organization, (organization) => organization.employees, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     organization: Organization
 
     @OneToOne(type => TipLink, { cascade: true, eager: true })
     @JoinColumn()
     tipLink: TipLink
 
-    // @OneToMany(() => TipLink, (tipLink) => tipLink.employee)
-    // tipLinks: TipLink[]
 }

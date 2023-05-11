@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { TipLinksService } from './tip-links.service';
 import { CreateTipLinkDto } from './dto/create-tip-link.dto';
 import { UpdateTipLinkDto } from './dto/update-tip-link.dto';
@@ -18,8 +18,8 @@ export class TipLinksController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Req() req) {
-    return this.tipLinksService.findAllByUser(req.user.id);
+  findAll(@Query('filter') filter: string, @Req() req) {
+    return this.tipLinksService.findAllByUser(req.user.id, filter);
   }
 
   @Get(':id')

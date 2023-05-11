@@ -18,7 +18,7 @@ export default function UserCard({ fullname, pfp, position, className }: Props) 
                     <Image width={128} height={128} className='bg-gray-text w-16 h-16 rounded-3xl' src='/default-pfp.png' alt='default-pfp' />
 
                 }
-                <div>
+                <div className='flex flex-col items-start'>
                     <p className='font-semibold'>{fullname}</p>
                     <p className='text-gray-text'>{position}</p>
                 </div>

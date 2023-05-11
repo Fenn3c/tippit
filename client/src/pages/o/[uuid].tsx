@@ -27,7 +27,7 @@ type Props = {
 export default function companyLink({ organization }: Props) {
     const activeEmployees = organization.employees.filter(employee => employee.position)
     return (
-        <Layout title={organization.name}>
+        <Layout title={organization.name} cleanHeader>
             <div className="flex flex-col gap-y-4">
                 {activeEmployees.map((employee, index) =>
                     <Link href={`/t/${employee.tipLink.uuid}`}>

@@ -77,22 +77,23 @@ export default function Organization({ organization }: Props) {
 
                     <Button text="Удалить организацию" onClick={handleDelete} red />
                     <div>
-                        <p className="font-bold text-2xl mb-4">Ждут подтверждения</p>
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            {waitingEmployees.map((employee, index) =>
-                                <button key={index} onClick={() => setWaitingEmployeeModal(employee.uuid)}>
-                                    <UserCard fullname={`${employee.user.name} ${employee.user.surname}`} />
-                                </button>)}
-                        </div>
-
-                        <p className="font-bold text-2xl mb-4">Сотрудники</p>
-                        <div className="flex flex-col gap-y-4">
-                            {activeEmployees.map((employee, index) =>
-                                <button key={index} onClick={() => setActiveEmployeeModal(employee.uuid)}>
-                                    <UserCard fullname={`${employee.user.name} ${employee.user.surname}`}
-                                        position={employee.position ? employee.position : ''} />
-                                </button>)}
-                        </div>
+                        {Boolean(waitingEmployees.length) && <>
+                            <p className="font-bold text-2xl mb-4">Ждут подтверждения</p>
+                            <div className="flex flex-col gap-y-4 mb-6">
+                                {waitingEmployees.map((employee, index) =>
+                                    <button key={index} onClick={() => setWaitingEmployeeModal(employee.uuid)}>
+                                        <UserCard fullname={`${employee.user.name} ${employee.user.surname}`} pfp={employee.user.pfp} />
+                                    </button>)}
+                            </div></>}
+                        {Boolean(activeEmployees.length) && <>
+                            <p className="font-bold text-2xl mb-4">Сотрудники</p>
+                            <div className="flex flex-col gap-y-4">
+                                {activeEmployees.map((employee, index) =>
+                                    <button key={index} onClick={() => setActiveEmployeeModal(employee.uuid)}>
+                                        <UserCard fullname={`${employee.user.name} ${employee.user.surname}`} position={employee.position ? employee.position : ''} pfp={employee.user.pfp} />
+                                    </button>)}
+                            </div>
+                        </>}
 
                     </div>
                 </div>

@@ -112,10 +112,10 @@ export class PaymentsService {
     })
     const dates = operationsMapped.map(operation => operation.date)
     const values = operationsMapped.map(operation => operation.value)
-    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true, pay_date: betweenDates }))
-    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true, pay_date: betweenDates }))
-    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true, pay_date: betweenDates })
-    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true, pay_date: betweenDates })
+    const total = Math.round(await this.paymentRepository.sum('amount', { receiver: user, paid: true, pay_date: betweenDates })) ?? 0
+    const avg = Math.round(await this.paymentRepository.average('amount', { receiver: user, paid: true, pay_date: betweenDates })) ?? 0
+    const max = await this.paymentRepository.maximum('amount', { receiver: user, paid: true, pay_date: betweenDates }) ?? 0
+    const min = await this.paymentRepository.minimum('amount', { receiver: user, paid: true, pay_date: betweenDates }) ?? 0
     const percent = this.calculatePercentageIncrease(values)
     return {
       period, total, avg, min, max,

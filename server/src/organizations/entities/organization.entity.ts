@@ -20,7 +20,7 @@ export class Organization {
     @JoinColumn()
     tipLinkData: TipLinkData
 
-    @OneToMany(() => TipLink, (tipLink) => tipLink.organization)
+    @OneToMany(() => TipLink, (tipLink) => tipLink.organization, { cascade: true })
     tipLinks: TipLink[]
 
     @ManyToOne(() => User, (user) => user.tipLinks)

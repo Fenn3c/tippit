@@ -69,7 +69,7 @@ export default function Statistics({ period, total, avg, min, max, payments }: P
                     }
                 }
                 } />
-            <div className="grid grid-cols-2 gap-4 mt-8">
+            <div className="grid grid-cols-2 gap-4">
                 <ChartCard
                     title='Заработано'
                     color='#3D96FF'

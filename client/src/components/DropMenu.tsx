@@ -6,9 +6,10 @@ import { motion } from 'framer-motion'
 type Props = {
     options: { [key: string | number]: { name: string, onSelect?: () => void } },
     initialId?: string | number,
+    className?: string
 }
 
-export default function DropMenu({ options, initialId = 0 }: Props) {
+export default function DropMenu({ options, initialId = 0, className }: Props) {
     const [open, setOpen] = useState(false)
     const [selected, setSelected] = useState<string | number>(initialId)
     const handleOpen = () => {
@@ -19,7 +20,7 @@ export default function DropMenu({ options, initialId = 0 }: Props) {
         setOpen(false)
         options[id].onSelect?.()
     }
-    return <>
+    return <div className={open ? 'mb-8' : 'mb-2'}>
         <button onClick={handleOpen} className='text-main-500 font-bold flex items-center mb-2'>{options[selected]?.name}<DropDownIcon open={open} /></button>
         <motion.div
             initial={{
@@ -38,7 +39,7 @@ export default function DropMenu({ options, initialId = 0 }: Props) {
         </motion.div>
 
 
-    </>
+    </div>
 
 
 }

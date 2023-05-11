@@ -30,7 +30,7 @@ export class TipLinkData {
     @OneToMany(() => TipLink, (tipLinks) => tipLinks.tipLinkData, { nullable: true })
     tipLinks: TipLink[]
 
-    @OneToOne(() => Organization, organization => organization.tipLinkData, { onDelete: 'CASCADE' })
+    @OneToOne(() => Organization, organization => organization.tipLinkData, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     organization: Organization
 
 }

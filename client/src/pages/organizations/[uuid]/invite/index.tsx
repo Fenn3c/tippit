@@ -1,15 +1,7 @@
 import Layout from '@/components/layouts/Layout'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import Image from 'next/image'
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import Card from '@/components/layouts/Card';
-import ProfileIcon from '@/components/ProfileIcon';
-import ExitIcon from '@/components/ExitIcon';
-import AddTipLinkButton from '@/components/AddTipLinkButton';
 import axiosInstance from '@/utils/axios';
-import Button from '@/components/Button';
-import QrCard from '@/components/QrCard';
 const DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN
 
 
@@ -45,10 +37,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         console.error(e)
         return {
             props: {},
-            // redirect: {
-            //     permanent: false,
-            //     destination: "/signin"
-            // }
+            redirect: {
+                permanent: false,
+                destination: "/signin"
+            }
         }
     }
 }

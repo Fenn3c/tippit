@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTipLinkDto } from './dto/create-tip-link.dto';
 import { UpdateTipLinkDto } from './dto/update-tip-link.dto';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { TipLink } from './entities/tip-link.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 } from 'uuid';
@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/users.entity';
 import { TipLinkData } from './entities/tip-link-data.entity';
+import { Organization } from 'src/organizations/entities/organization.entity';
 
 @Injectable()
 export class TipLinksService {
@@ -55,10 +56,15 @@ export class TipLinksService {
     return this.tipLinksRepository.find()
   }
 
-  findAllByUser(userId: number) {
+  findAllByUser(userId: number, filter?: string) {
     const user = new User()
     user.id = userId
-    return this.tipLinksRepository.find({ where: { user }, relations: [] })
+    if (filter === 'me')
+      return this.tipLinksRepository.find({ where: { user, organization: IsNull() }, relations: ['organization'] })
+    if (filter) {
+      return this.tipLinksRepository.find({ where: { user, organization: { uuid: filter } }, relations: ['organization'] })
+    }
+    return this.tipLinksRepository.find({ where: { user }, relations: ['organization'] })
   }
 
   async findOne(id: number) {

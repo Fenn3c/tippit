@@ -22,10 +22,10 @@ export class TipLink {
     @OneToMany(() => Payment, (payment) => payment.tip_link)
     payments: Payment[]
 
-    @OneToOne(() => Employee, employee => employee.tipLink, { onDelete: 'CASCADE' })
+    @OneToOne(() => Employee, employee => employee.tipLink, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     employee: Employee
 
-    @ManyToOne(() => Organization, organization => organization.tipLinks, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Organization, organization => organization.tipLinks, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     organization: Organization
 
 }
