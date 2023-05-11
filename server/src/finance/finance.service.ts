@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { Payout } from 'src/payouts/entities/payout.entity';
@@ -12,6 +13,7 @@ export class FinanceService {
         @InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
         @InjectRepository(Payout) private readonly payoutRepository: Repository<Payout>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private readonly configService: ConfigService,
         private readonly usersService: UsersService
     ) { }
 
@@ -101,9 +103,9 @@ export class FinanceService {
         if (!user) throw new NotFoundException('Пользователь не найден')
         return {
             balance: user.balance,
-            yookassa_agent_id: process.env.YOOKASSA_PAYOUTS_AGENT_ID,
-            max_payout_amount: Number(process.env.MAX_PAYOUT_AMOUNT),
-            min_payout_amount: Number(process.env.MIN_PAYOUT_AMOUNT)
+            yookassa_agent_id: this.configService.get('YOOKASSA_PAYOUTS_AGENT_ID'),
+            max_payout_amount: Number(this.configService.get('MAX_PAYOUT_AMOUNT')),
+            min_payout_amount: Number(this.configService.get('MIN_PAYOUT_AMOUNT')),
         }
     }
 

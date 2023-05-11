@@ -1,10 +1,17 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { FinanceService } from './finance.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('finance')
 export class FinanceController {
-  constructor(private readonly financeService: FinanceService) { }
+  constructor(private readonly financeService: FinanceService,
+    private readonly configService: ConfigService) { }
+
+  @Get('/commission-percent')
+  getCommisionPercent(): number {
+    return +this.configService.get('COMMISION_PERCENT')
+  }
 
   @Get('/statistics/:period')
   @UseGuards(JwtAuthGuard)

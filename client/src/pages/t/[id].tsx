@@ -144,7 +144,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
             headers: ctx.req.headers
         })
 
-        const commissionPercent = (await axiosInstance.get(`/payments/commission-percent`)).data
+        const commissionPercent = (await axiosInstance.get(`/finance/commission-percent`)).data
         return {
             props: {
                 uuid: res.data.uuid,

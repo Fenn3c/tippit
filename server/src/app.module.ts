@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './users/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { SmsModule } from './sms/sms.module';
@@ -30,19 +30,24 @@ import { FinanceModule } from './finance/finance.module';
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
     }),
-    ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => (
+        {
+          type: 'postgres',
+          host: configService.get<string>('POSTGRES_HOST'),
+          port: configService.get<number>('POSTGRESS_PORT'),
+          username: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRESS_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+          entities: [User, PhoneVerification, TipLink, TipLinkData, Payment, Organization, Employee, Payout],
+          synchronize: true, // delete in production
+        }),
+      inject: [ConfigService]
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRESS_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRESS_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: [User, PhoneVerification, TipLink, TipLinkData, Payment, Organization, Employee, Payout],
-      synchronize: true, // delete in production
-    }),
+    ConfigModule.forRoot(
+      { envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true }
+    ),
     UsersModule,
     AuthModule,
     SmsModule,

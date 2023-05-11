@@ -8,6 +8,7 @@ import { TipLinksService } from 'src/tip-links/tip-links.service';
 import { UsersService } from 'src/users/users.service';
 import axios from 'axios';
 import { User } from 'src/users/users.entity';
+import { ConfigService } from '@nestjs/config';
 
 const YOOKASSA_API = 'https://api.yookassa.ru/v3/'
 
@@ -16,15 +17,16 @@ export class PaymentsService {
   constructor(@InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly tipLinksService: TipLinksService,
-    private readonly usersService: UsersService) { }
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService) { }
 
   public calculateCommission(amount: number): number {
-    const percent = Number(process.env.COMMISION_PERCENT)
+    const percent = Number(this.configService.get('COMMISION_PERCENT'))
     return Math.ceil(amount / 100 * percent)
   }
 
 
-  
+
 
   private async createYookassaPayment(amount: number, paymentUUID: string): Promise<{
     id: string,
@@ -43,13 +45,13 @@ export class PaymentsService {
         capture: true,
         confirmation: {
           type: "redirect",
-          return_url: `${process.env.DOMAIN_NAME}/confirm-payment/${paymentUUID}`
+          return_url: `${this.configService.get('DOMAIN_NAME')}/confirm-payment/${paymentUUID}`
         },
         description: "Оплата чаевых"
       }, {
         auth: {
-          username: process.env.YOOKASSA_SHOP_ID,
-          password: process.env.YOOKASSA_SECRET
+          username: this.configService.get('YOOKASSA_SHOP_ID'),
+          password: this.configService.get('YOOKASSA_SECRET')
         },
         headers: {
           "Idempotence-Key": paymentUUID
@@ -97,8 +99,8 @@ export class PaymentsService {
     try {
       const res = await axios.get(`${YOOKASSA_API}/payments/${paymentId}`, {
         auth: {
-          username: process.env.YOOKASSA_SHOP_ID,
-          password: process.env.YOOKASSA_SECRET
+          username: this.configService.get('YOOKASSA_SHOP_ID'),
+          password: this.configService.get('YOOKASSA_SECRET')
         }
       })
       return res.data

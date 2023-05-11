@@ -1,15 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) { }
+  constructor(private readonly paymentsService: PaymentsService,
+    private readonly configService: ConfigService) { }
 
-  @Get('/commission-percent')
-  getCommisionPercent(): number {
-    return +process.env.COMMISION_PERCENT
-  }
+
 
 
   @Get('/confirm/:uuid')

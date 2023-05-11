@@ -8,6 +8,7 @@ import { Payout } from './entities/payout.entity';
 import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 const YOOKASSA_API = 'https://api.yookassa.ru/v3'
 
 @Injectable()
@@ -17,7 +18,8 @@ export class PayoutsService {
     @InjectRepository(Payout)
     private readonly payoutRepository: Repository<Payout>,
     private readonly usersService: UsersService,
-    private readonly smsService: SmsService
+    private readonly smsService: SmsService,
+    private readonly configService: ConfigService
   ) { }
 
   private async createYookassaPayout(payoutUUID: string, amount: number, payoutToken: string): Promise<{
@@ -38,8 +40,8 @@ export class PayoutsService {
         }
       }, {
         auth: {
-          username: process.env.YOOKASSA_PAYOUTS_AGENT_ID,
-          password: process.env.YOOKASSA_PAYOUTS_SECRET
+          username: this.configService.get('YOOKASSA_PAYOUTS_AGENT_ID'),
+          password: this.configService.get('YOOKASSA_PAYOUTS_SECRET')
         },
         headers: {
           "Idempotence-Key": payoutUUID
