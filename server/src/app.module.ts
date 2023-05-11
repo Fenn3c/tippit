@@ -22,6 +22,7 @@ import { TipLinkData } from './tip-links/entities/tip-link-data.entity';
 import { PayoutsModule } from './payouts/payouts.module';
 import { Payout } from './payouts/entities/payout.entity';
 import { FinanceModule } from './finance/finance.module';
+import { envValidationSchema } from './envValidationSchema';
 
 @Module({
   controllers: [AppController],
@@ -46,7 +47,7 @@ import { FinanceModule } from './finance/finance.module';
       inject: [ConfigService]
     }),
     ConfigModule.forRoot(
-      { envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true }
+      { envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true, validationSchema: envValidationSchema }
     ),
     UsersModule,
     AuthModule,
