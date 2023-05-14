@@ -21,7 +21,8 @@ const signupSchema = Yup.object().shape({
     phoneVerificationId: Yup.string().required('Ошибка телефона'),
     name: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     surname: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
-    password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа'),
+    password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа').matches(/[a-z]/, "Пароль должен содержать как минимум одну строчную букву")
+        .matches(/[A-Z]/, "Пароль должен содержать как минимум одну заглавную букву").matches(/[!@#$%^&*(),.?":{}|<>\-_]/, "Пароль должен содержать как минимум один специальный символ"),
     passwordConfirm: Yup.string().required('Обязательное поле').oneOf([Yup.ref('password')], 'Пароли не совпадают'),
     position: Yup.string().required('Обязательное поле'),
     pfp: Yup.mixed().test(
@@ -62,7 +63,7 @@ export default function SignUp() {
                 formData.append('surname', values.surname)
                 formData.append('position', values.position)
                 formData.append('password', values.password)
-                formData.append('passwordConfirm', values.passwordConfirm)
+                // formData.append('passwordConfirm', values.passwordConfirm)
                 formData.append('phoneVerificationId', values.phoneVerificationId)
                 formData.append('phoneVerify', values.phoneVerify)
                 if (values.pfp)

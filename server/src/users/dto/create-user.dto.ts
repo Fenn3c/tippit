@@ -4,5 +4,4 @@ export class CreateUserDto {
     surname: string
     position?: string
     password: string;
-    passwordConfirm: string;
 }

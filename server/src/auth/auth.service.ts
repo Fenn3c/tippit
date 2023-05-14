@@ -30,7 +30,6 @@ export class AuthService {
     }
 
     async signup(signUpDto: SignUpDto, pfp: any) {
-        if (signUpDto.password !== signUpDto.passwordConfirm) throw new BadRequestException('Пароли не совпадают')
         const existingUser = await this.userService.getUserByPhone(signUpDto.phone)
         if (existingUser) {
             throw new BadRequestException('Пользователь с таким телефоном существует')

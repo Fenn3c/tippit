@@ -21,12 +21,11 @@ export class SignUpDto {
     @IsString()
     position?: string
 
-    @IsStrongPassword()
+    @MinLength(8)
+    @Matches(/[a-z]/)
+    @Matches(/[A-Z]/)
+    @Matches(/[!@#$%^&*(),.?":{}|<>\-_]/)
     password: string;
-
-    @IsNotEmpty()
-    @IsString()
-    passwordConfirm: string;
 
     @IsString()
     @IsNotEmpty()
