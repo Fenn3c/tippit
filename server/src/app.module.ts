@@ -23,6 +23,7 @@ import { PayoutsModule } from './payouts/payouts.module';
 import { Payout } from './payouts/entities/payout.entity';
 import { FinanceModule } from './finance/finance.module';
 import { envValidationSchema } from './envValidationSchema';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   controllers: [AppController],
@@ -49,6 +50,7 @@ import { envValidationSchema } from './envValidationSchema';
     ConfigModule.forRoot(
       { envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true, validationSchema: envValidationSchema }
     ),
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     SmsModule,

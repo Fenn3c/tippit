@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import axios from 'axios';
 import { User } from 'src/users/users.entity';
 import { ConfigService } from '@nestjs/config';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 const YOOKASSA_API = 'https://api.yookassa.ru/v3/'
 
@@ -140,7 +141,39 @@ export class PaymentsService {
 
 
 
-
+  @Cron(CronExpression.EVERY_5_SECONDS)
+  async handlePaymentsCron() {
+    let toRemove: Payment[] = []
+    let paid: Payment[] = []
+    const currentDate = new Date()
+    const oneHourAgo = new Date(currentDate.getTime() - (60 * 60 * 1000));
+    const notPaidPayments = await this.paymentRepository.find({
+      where: {
+        paid: false
+      },
+      relations: ['receiver']
+    })
+    if (!notPaidPayments.length) return
+    for (const notPaid of notPaidPayments) {
+      if (notPaid.created_date.getDate() > oneHourAgo.getTime()) {
+        toRemove.push(notPaid)
+        break
+      }
+      const checkPayment = await this.checkYookassaPayment(notPaid.payment_id)
+      if (checkPayment.status === 'succeeded') {
+        notPaid.pay_date = new Date()
+        notPaid.paid = true
+        await this.paymentRepository.manager.transaction(async (manager) => {
+          await manager.save(notPaid)
+          notPaid.receiver.balance = notPaid.receiver.balance + notPaid.amount
+          await manager.save(notPaid.receiver)
+        })
+        paid.push(notPaid)
+      }
+    }
+    await this.paymentRepository.remove(toRemove)
+    console.log(`Найдено оплаченных платежей ${paid.length} Очищено неоплаченных платежей: ${toRemove.length}`)
+  }
 
 
 
