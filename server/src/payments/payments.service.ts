@@ -115,7 +115,7 @@ export class PaymentsService {
   async confirmPayment(uuid: string) {
     const payment = await this.findOneByUUID(uuid)
     if (!payment) throw new BadRequestException('Платеж не найден')
-    if (payment.paid) throw new BadRequestException('Платеж уже подтвержден')
+    if (payment.paid) return payment
     const user = await this.userRepository.findOneBy(payment.receiver)
     if (!user) throw new BadRequestException('Пользователь не найден')
     const checkPayement = await this.checkYookassaPayment(payment.payment_id)
