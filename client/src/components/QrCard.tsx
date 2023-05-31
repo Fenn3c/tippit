@@ -41,7 +41,7 @@ export default function QrCard({ name, topLabel, link, bottomLabel, onMoreClick 
                     <p className="text-gray-text">{topLabel}</p>
                 </div>
                 <QRCodeSVG value={link} className='w-48 h-48' />
-                <p className='font-semibold'>{link}</p>
+                <p className='font-semibold max-w-full break-words'>{link}</p>
                 <Button text='Поделиться' onClick={handleShare} icon={<ShareIcon />} />
                 <p className="text-gray-text">
                     {bottomLabel}
