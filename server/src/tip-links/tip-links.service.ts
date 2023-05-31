@@ -10,6 +10,7 @@ import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/users.entity';
 import { TipLinkData } from './entities/tip-link-data.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class TipLinksService {
@@ -32,7 +33,7 @@ export class TipLinksService {
     tipLinkData.thank_text = createTipLinkDto.thankText
     tipLinkData.max_amount = Number(createTipLinkDto.maxAmount)
     tipLinkData.min_amount = Number(createTipLinkDto.minAmount)
-    tipLink.uuid = v4()
+    tipLink.uuid = nanoid(11)
     tipLink.user = user
     let fileName = null
     if (banner) {

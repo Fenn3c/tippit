@@ -12,6 +12,7 @@ import { User } from 'src/users/users.entity';
 import { Employee } from './entities/employee.entity';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { TipLink } from 'src/tip-links/entities/tip-link.entity';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class OrganizationsService {
@@ -39,7 +40,7 @@ export class OrganizationsService {
       }
     }
     tipLinkData.banner = fileName
-    organization.uuid = v4()
+    organization.uuid = nanoid(11)
     organization.name = createOrganizationDto.name
     organization.owner = user
 
@@ -130,7 +131,7 @@ export class OrganizationsService {
     const tipLink = new TipLink()
     tipLink.tipLinkData = employee.organization.tipLinkData
     tipLink.user = employee.user
-    tipLink.uuid = v4()
+    tipLink.uuid = nanoid(11)
     tipLink.employee = employee
     tipLink.organization = employee.organization
     return await this.tipLinkRepository.save(tipLink)

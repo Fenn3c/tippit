@@ -154,7 +154,6 @@ export class PaymentsService {
       relations: ['receiver']
     })
     if (!notPaidPayments.length) return
-    console.log(notPaidPayments.length)
     for (const notPaid of notPaidPayments) {
       if (notPaid.created_date.getTime() < oneHourAgo.getTime()) {
         toRemove.push(notPaid)
