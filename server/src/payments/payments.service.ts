@@ -154,10 +154,11 @@ export class PaymentsService {
       relations: ['receiver']
     })
     if (!notPaidPayments.length) return
+    console.log(notPaidPayments.length)
     for (const notPaid of notPaidPayments) {
-      if (notPaid.created_date.getDate() > oneHourAgo.getTime()) {
+      if (notPaid.created_date.getTime() < oneHourAgo.getTime()) {
         toRemove.push(notPaid)
-        break
+        continue
       }
       const checkPayment = await this.checkYookassaPayment(notPaid.payment_id)
       if (checkPayment.status === 'succeeded') {
