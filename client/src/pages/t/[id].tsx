@@ -80,7 +80,7 @@ export default function tipLink({ uuid, banner, pageText, thankText, minAmount, 
     return (
         <Layout cleanHeader>
             {banner ?
-                <img className="fixed top-16 left-0 w-screen h-48 bg-blue-100" src={`${process.env.NEXT_PUBLIC_STATIC_HOST}/${banner}`} alt="" /> :
+                <img className="fixed top-16 left-0 w-screen h-48 bg-blue-100 object-cover" src={`${process.env.NEXT_PUBLIC_STATIC_HOST}/${banner}`} alt="" /> :
                 <div className="fixed top-16 left-0 w-screen h-48 bg-blue-100" />
             }
             <div className="flex flex-col relative z-10 gap-y-8 mb-4">
@@ -145,6 +145,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         })
 
         const commissionPercent = (await axiosInstance.get(`/finance/commission-percent`)).data
+        const position = res.data?.employee?.position ? res.data.employee.position : res.data.user.position;
         return {
             props: {
                 uuid: res.data.uuid,
@@ -155,7 +156,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
                 maxAmount: res.data.tipLinkData.max_amount,
                 userName: res.data.user.name,
                 userSurname: res.data.user.surname,
-                userPosition: res.data.user.position,
+                userPosition: position,
                 userPfp: res.data.user.pfp,
                 commissionPercent: commissionPercent
             }

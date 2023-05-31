@@ -33,7 +33,7 @@ const editTipLinkSchema = Yup.object().shape({
     minAmount: Yup.number().required('Укажите сумму').min(5000, `Минимальная сумма ${formatMoney(5000)}`)
         .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
     maxAmount: Yup.number().required('Укажите сумму').max(5000, `Минимальная сумма ${formatMoney(5000)}`)
-        .max(300000, `Максимальная сумма ${formatMoney(300000)}`),
+        .max(300000, `Максимальная сумма ${formatMoney(300000)}`).moreThan(Yup.ref('minAmount'), 'Максимальная сумма не может быть меньше минимальной'),
 
     banner: Yup.mixed().test(
         'fileFormat',

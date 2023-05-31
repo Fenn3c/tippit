@@ -74,7 +74,7 @@ export class TipLinksService {
   async findOneByUUID(uuid: string) {
     // return await this.tipLinksRepository.findOneBy({ uuid })
     return await this.tipLinksRepository.findOne({
-      relations: ['user'],
+      relations: ['user', 'employee'],
       where: { uuid: uuid }
     })
   }
