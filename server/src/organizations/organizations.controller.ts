@@ -32,7 +32,6 @@ export class OrganizationsController {
   }
 
   @Get(':uuid')
-  // @UseGuards(JwtAuthGuard)
   async findOne(@Param('uuid') uuid: string, @Req() req) {
     return await this.organizationsService.findOneByUUID(uuid);
   }

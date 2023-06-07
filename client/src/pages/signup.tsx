@@ -24,7 +24,7 @@ const signupSchema = Yup.object().shape({
     password: Yup.string().required('Обязательное поле').min(8, 'Минимально 8 символов').max(32, 'Максимально 32 символа').matches(/[a-z]/, "Пароль должен содержать как минимум одну строчную букву")
         .matches(/[A-Z]/, "Пароль должен содержать как минимум одну заглавную букву").matches(/[!@#$%^&*(),.?":{}|<>\-_]/, "Пароль должен содержать как минимум один специальный символ"),
     passwordConfirm: Yup.string().required('Обязательное поле').oneOf([Yup.ref('password')], 'Пароли не совпадают'),
-    position: Yup.string().required('Обязательное поле'),
+    position: Yup.string().required('Обязательное поле').min(3, 'Минимально 3 символа').max(32, 'Максимально 32 символа'),
     pfp: Yup.mixed().test(
         'fileFormat',
         'Файл должен быть в формате jpg, jpeg или png',

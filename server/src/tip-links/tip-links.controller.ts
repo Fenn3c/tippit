@@ -23,7 +23,6 @@ export class TipLinksController {
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard)
   findOne(@Param('id') uuid: string) {
     return this.tipLinksService.findOneByUUID(uuid);
   }

@@ -26,13 +26,13 @@ import { envValidationSchema } from './envValidationSchema';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController], // Главный контроллер
+  providers: [AppService], // Главный провайдер
   imports: [
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
-    }),
-    TypeOrmModule.forRootAsync({
+    }), // Подключение раздачи статики
+    TypeOrmModule.forRootAsync({ // Подключение TypeOrm
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => (
         {
@@ -47,19 +47,19 @@ import { ScheduleModule } from '@nestjs/schedule';
         }),
       inject: [ConfigService]
     }),
-    ConfigModule.forRoot(
+    ConfigModule.forRoot( // Подключение конфига
       { envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true, validationSchema: envValidationSchema }
     ),
-    ScheduleModule.forRoot(),
-    UsersModule,
-    AuthModule,
-    SmsModule,
-    FilesModule,
-    TipLinksModule,
-    PaymentsModule,
-    OrganizationsModule,
-    PayoutsModule,
-    FinanceModule,
+    ScheduleModule.forRoot(), // Модуль таймера
+    UsersModule, // Модуль пользователей
+    AuthModule, // Модуль аутентификации
+    SmsModule, // Модуль SMS
+    FilesModule, // Модуль файлов
+    TipLinksModule, // Модуль ссылок
+    PaymentsModule, // Модуль платежей
+    OrganizationsModule, // Модуль организаций
+    PayoutsModule, // Модуль выплат
+    FinanceModule, // Модуль финансов
   ]
 })
 export class AppModule { }
