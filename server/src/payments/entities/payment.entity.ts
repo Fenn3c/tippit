@@ -4,10 +4,10 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'payments' })
 export class Payment {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'id_payment' })
     id: number
 
-    @Column({ nullable: false, unique: true })
+    @Column({ nullable: false, unique: true, length: 256 })
     uuid: string
 
     @Column({ nullable: false })
@@ -16,7 +16,7 @@ export class Payment {
     @Column({ nullable: false })
     commision_amount: number
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, length: 32 })
     comment: string
 
     @Column({ nullable: false })
@@ -34,16 +34,16 @@ export class Payment {
     })
     paid: boolean
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 256 })
     payment_link: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 256 })
     payment_id: string
 
-    @ManyToOne(() => User, (user) => user.tipLinks, {onDelete: 'SET NULL'})
+    @ManyToOne(() => User, (user) => user.tipLinks, { onDelete: 'SET NULL' })
     receiver: User
 
-    @ManyToOne(() => TipLink, (tipLink) => tipLink.payments, {onDelete: 'SET NULL'})
+    @ManyToOne(() => TipLink, (tipLink) => tipLink.payments, { onDelete: 'SET NULL' })
     tip_link: TipLink
 
 }

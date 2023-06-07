@@ -5,13 +5,13 @@ import { TipLink } from "src/tip-links/entities/tip-link.entity";
 
 @Entity({ name: 'employees' })
 export class Employee {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'id_employee' })
     id: number
 
-    @Column({ unique: true })
+    @Column({ unique: true, length: 256 })
     uuid: string
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, length: 32 })
     position: string
 
     @ManyToOne(() => User, (user) => user.employees)

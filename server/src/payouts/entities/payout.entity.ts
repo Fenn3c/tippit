@@ -4,22 +4,22 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'payouts' })
 export class Payout {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ 'name': 'id_payout' })
     id: number
 
-    @Column({ unique: true })
+    @Column({ unique: true, length: 256 })
     uuid: string
 
     @Column({ nullable: false })
     amount: number
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 256 })
     payout_token: string
 
     @Column()
     payout_date: Date
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 256 })
     payout_id: string
 
     @ManyToOne(() => User, (user) => user.payouts)

@@ -7,10 +7,10 @@ import { Organization } from "src/organizations/entities/organization.entity";
 
 @Entity({ name: 'tip_links' })
 export class TipLink {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'id_tip_link' })
     id: number
 
-    @Column({ unique: true })
+    @Column({ unique: true, length: 256 })
     uuid: string
 
     @ManyToOne(() => TipLinkData, (tipLinkData) => tipLinkData.tipLinks, { eager: true })

@@ -6,13 +6,13 @@ import { TipLink } from "src/tip-links/entities/tip-link.entity";
 
 @Entity({ name: 'organizations' })
 export class Organization {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'id_organization' })
     id: number
 
-    @Column({ unique: true })
+    @Column({ unique: true, length: 256 })
     uuid: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 32 })
     name: string
 
     // @ManyToOne(() => TipLinkData, (tipLinkData) => tipLinkData.organization, { eager: true, onDelete: 'CASCADE' })

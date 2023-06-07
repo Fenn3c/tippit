@@ -8,25 +8,25 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'id_user' })
     id: number
 
-    @Column({ nullable: false, unique: true })
+    @Column({ nullable: false, unique: true, length: 11 })
     phone: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 32 })
     name: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 32 })
     surname: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, length: 256 })
     password: string
 
-    @Column({ nullable: false, default: 'Получатель чаевых' })
+    @Column({ nullable: false, default: 'Получатель чаевых', length: 32 })
     position: string
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, length: 256 })
     pfp: string
 
     @Column({ nullable: false, type: 'int', default: 0 })
