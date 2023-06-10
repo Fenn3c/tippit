@@ -116,7 +116,6 @@ export default function SignUp() {
         setLoading(true)
         console.log(pin)
 
-        await formik.setFieldTouched('phoneVerify')
         console.log(formik.values)
         await axiosInstance.post('/api/sms/verify', {
             'verificationId': formik.values.phoneVerificationId,
@@ -127,7 +126,8 @@ export default function SignUp() {
         }).catch((err) => {
             console.error(err)
             formik.setFieldError('phoneVerify', 'Неверный PIN')
-        }).finally(() => {
+        }).finally(async () => {
+            await formik.setFieldTouched('phoneVerify')
             setLoading(false)
         })
     }
