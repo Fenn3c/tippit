@@ -1,18 +1,13 @@
-import AddTipLinkButton from '@/components/AddTipLinkButton';
-import ModalButton from '@/components/ModalButton';
-import TipLink from '@/components/QrCard';
 import Layout from '@/components/layouts/Layout'
-import Modal from '@/components/layouts/Modal';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import axiosInstance from '../utils/axios';
 import Card from '@/components/layouts/Card';
-import TextButton from '@/components/TextButton';
 import ProfileIcon from '@/components/ProfileIcon';
 import ExitIcon from '@/components/ExitIcon';
+import { prettyPhoneNumber } from '@/utils/formatPhoneNumber';
 
 
 
@@ -48,7 +43,7 @@ export default function Profile({ id, phone, name, surname, position, pfp }: Pro
                         }
                         <div>
                             <p className='font-semibold'>{fullname}</p>
-                            <p className='text-gray-text'>{phone}</p>
+                            <p className='text-gray-text'>{prettyPhoneNumber(phone)}</p>
                         </div>
 
                     </div>

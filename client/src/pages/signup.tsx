@@ -168,6 +168,7 @@ export default function SignUp() {
                             error={formik.errors?.phone}
                             value={formik.values.phone}
                             touched={formik.touched.phone}
+                            numberic
                         />
                         <Button text='Отправить SMS' onClick={handleSMS} disabled={Boolean(formik.errors.phone?.length) || !formik.touched.phone || loading} />
                         <div className="flex justify-center">

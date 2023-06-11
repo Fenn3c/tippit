@@ -77,6 +77,7 @@ const PinInput: React.FC<PinInputProps> = ({ length, onComplete, title = '', typ
                             ref={(ref) => inputRefs.current[index] = ref}
                             onKeyDown={(event) => handleKeyDown(event, index)}
                             autoFocus={index === 0}
+                            inputMode='numeric'
                         />
                     ))}
                 </div>
